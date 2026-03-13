@@ -5,6 +5,8 @@ Plataforma mobile de estudos para o ENEM com React Native e FastAPI.
 ## Como rodar
 ```bash
 cd nextENEM
+```
+
 
 ### Backend
 ```bash
