@@ -26,7 +26,7 @@ cd frontend
 npm install
 npx expo start --clear
 ```
-
+aa
 ## Stack
 - **Frontend:** React Native + Expo + TypeScript
 - **Backend:** Python + FastAPI + SQLite
