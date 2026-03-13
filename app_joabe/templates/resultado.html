@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultado - NextEnem</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='resultado.css') }}">
+
+</head>
+<body>
+
+<div class="card">
+
+    <h2>Resultado Final</h2>
+
+    <div class="email">
+        Logado como: <strong>{{ email }}</strong>
+    </div>
+
+    <div class="pontuacao">
+        {{ pontos }} / {{ session.get("indice") }}
+    </div>
+
+    {% if pontos <= 4 %}
+        <div class="nivel baixo">Nível: {{ nivel }}</div>
+    {% elif pontos <= 7 %}
+        <div class="nivel medio">Nível: {{ nivel }}</div>
+    {% else %}
+        <div class="nivel alto">Nível: {{ nivel }}</div>
+    {% endif %}
+
+    <form action="{{ url_for('reiniciar_simulado') }}">
+        <button class="btn-reiniciar">Refazer Simulado</button>
+    </form>
+    <form action="/home">
+        <button class="btn-logout">🚪 Sair</button>
+    </form>
+
+    <div class="mensagem">
+        o que importa não é quantas vezes voce cair, mas sim quantas vezes voce se leva 🚀
+    </div>
+
+</div>
+
+</body>
+</html>

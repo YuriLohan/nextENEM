@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - NextEnem</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h1>Bem-vindo, {{ email }}</h1>
+
+    <div class="card">
+        <p><strong>Foco atual:</strong> {{ foco }}</p>
+        <p><strong>Quantidade de simulados respondidos:</strong> {{ progresso }}</p>
+    </div>
+
+    <div class="botoes">
+        <a href="/simulado">Ir para Simulado</a>
+        <a href="/simulado">Reiniciar Simulado</a>
+        <a href="/foco">Definir foco</a>
+        <a href="/logout">Sair</a>
+    </div>
+</div>
+
+</body>
+</html>
