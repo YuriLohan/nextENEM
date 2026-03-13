@@ -3,6 +3,8 @@
 Plataforma mobile de estudos para o ENEM com React Native e FastAPI.
 
 ## Como rodar
+```bash
+cd nextENEM
 
 ### Backend
 ```bash
@@ -16,6 +18,7 @@ uvicorn main:app --reload --port 8000
 ```
 
 ### Frontend
+Abra um novo terminal e digite:
 ```bash
 cd frontend
 npm install
