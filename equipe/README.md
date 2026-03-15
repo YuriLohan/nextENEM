@@ -18,29 +18,51 @@ equipe/
 
 ---
 
-## ✅ Como começar
+# 🤝 Como Contribuir — NextENEM
 
-1. A partir da branch `teste`, crie sua pasta:
-```bash
-git checkout teste
-mkdir -p equipe/seu-nome/experimentos
-```
-
-2. Adicione seu `README.md` pessoal (use o template abaixo).
-
-3. Commite e suba:
-```bash
-git add equipe/seu-nome/
-git commit -m "feat: adiciona espaço de experimentos - seu-nome"
-git push origin teste
-```
+Leia com atenção antes de fazer qualquer coisa no repositório!
 
 ---
 
-## 📝 Template do README pessoal
+## ⚠️ Problema comum
 
-\```markdown
-# Experimentos — [Seu Nome]
+Se você **fez um fork** do repositório e tentou abrir um Pull Request, ele vai fechar automaticamente.
+**Não use fork.** Siga o guia abaixo.
+
+---
+
+## ✅ Passo a passo correto
+
+### 1. Peça acesso ao repositório
+Fale com o **YuriLohan** para te adicionar como colaborador.
+Você receberá um convite por e-mail — aceite antes de continuar.
+
+### 2. Clone o repositório original
+```bash
+git clone https://github.com/YuriLohan/nextENEM.git
+cd nextENEM
+```
+
+> ⚠️ Se você já tiver clonado via fork, delete a pasta e clone novamente pelo link acima.
+
+### 3. Entre na branch de testes
+```bash
+git checkout teste
+```
+
+### 4. Crie sua pasta dentro de `equipe/`
+```bash
+mkdir -p equipe/SeuUsuarioGitHub/experimentos
+touch equipe/SeuUsuarioGitHub/experimentos/.gitkeep
+```
+
+> Use exatamente o seu nome de usuário do GitHub, respeitando maiúsculas e minúsculas.
+
+### 5. Adicione seu README pessoal
+Crie o arquivo `equipe/SeuUsuarioGitHub/README.md` com o seguinte conteúdo:
+
+```markdown
+# Experimentos — [Seu Usuário GitHub]
 
 ## O que estou desenvolvendo
 ...
@@ -52,11 +74,32 @@ git push origin teste
 - [ ] Em andamento
 - [ ] Pronto para revisão
 - [ ] Mergeado na main
-\```
+```
+
+### 6. Suba suas alterações
+```bash
+git add equipe/SeuUsuarioGitHub/
+git commit -m "feat: adiciona espaço de experimentos - SeuUsuarioGitHub"
+git push origin teste
+```
 
 ---
 
-## 🚨 Regras da branch
+## 🔁 Abrindo um Pull Request
 
-- **Não mexa** nas pastas do projeto principal direto nesta branch
+Quando seu experimento estiver pronto para ser integrado ao projeto:
+
+1. Acesse o repositório no GitHub
+2. Clique em **Pull requests → New pull request**
+3. Configure assim:
+   - **base:** `main`
+   - **compare:** `teste`
+4. Descreva o que foi desenvolvido e clique em **Create pull request**
+
+---
+
+## 🚨 Regras
+
+- **Não mexa** nas pastas `API_enemDEV/` e `NextENEM/` direto na branch `teste`
 - **Não delete** a pasta de outro integrante
+- Dúvidas? Fale com o **YuriLohan**

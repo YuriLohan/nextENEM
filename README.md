@@ -17,7 +17,6 @@ uvicorn main:app --reload --port 8000
 
 ### Frontend
 ```bash
-cd frontend
 npm install
 npx expo start --clear
 ```
