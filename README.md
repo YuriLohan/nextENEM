@@ -22,6 +22,7 @@ uvicorn main:app --reload --port 8000
 ### Frontend
 Abra um novo terminal e digite:
 ```bash
+cd frontend
 npm install
 npx expo start --clear
 ```
