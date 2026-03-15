@@ -597,6 +597,17 @@ HTML = r"""<!DOCTYPE html>
 </script>
 </body>
 </html>"""
+@app.get("/api/debug/{year}/{index}")
+async def debug_question(year: int, index: int):
+    import requests
+    r = requests.get(f"https://api.enem.dev/v1/exams/{year}/questions", 
+                     params={"page": 1, "limit": 50})
+    data = r.json()
+    questions = data if isinstance(data, list) else data.get("questions", [])
+    for q in questions:
+        if q.get("index") == index:
+            return q  # retorna o JSON cru da questão
+    return {"error": "não encontrado"}
 
 @app.get("/", response_class=HTMLResponse)
 def index():
