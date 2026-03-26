@@ -75,7 +75,7 @@ SELECT * FROM users;
  
 ```bash
 # 1. Entre na pasta
-cd NextENEM-Web/backend
+cd NextENEM-Web-temp/backend
  
 # 2. Ative o ambiente virtual
 .venv\Scripts\activate       # Windows
@@ -112,7 +112,22 @@ npm run dev
 O frontend estará disponível em: **http://localhost:5173**
  
 ---
- 
+
+## Rodando o Aiosmtpd
+```bash
+# 1. Entre na pasta
+cd NextENEM-Web/backend
+
+#2. Ative o modo vent e instale o aiosmtpd
+.venv\Scripts\activate
+pip install aiosmtpd
+
+#3. Rodar o servidor SMTP fake
+python -m aiosmtpd -n -l localhost:1025
+```
+
+---
+
 ## Variáveis de ambiente (backend/.env)
  
 ```env
