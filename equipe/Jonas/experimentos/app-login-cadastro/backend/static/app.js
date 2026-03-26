@@ -71,43 +71,49 @@ function renderCadastro(){
 
     botao.onclick = async () => {
 
+    // 🔒 validação de email
+        if (!inputEmail.value.includes("@gmail.com")) {
+        mostrarMensagem("Digite um email @gmail válido!", false);
+        return;
+        }
+
         const response = await fetch("/cadastrar",{
 
             method:"POST",
 
             headers:{
-                "Content-Type":"application/json"
+            "Content-Type":"application/json"
             },
 
             body:JSON.stringify({
-                nome: inputNome.value,
-                email: inputEmail.value,
-                senha: inputSenha.value
-            })
+            nome: inputNome.value,
+            email: inputEmail.value,
+            senha: inputSenha.value
+        })
 
-        });
+    });
 
-        const data = await response.json();
+    const data = await response.json();
 
-        if(data.success){
+    if(data.success){
 
-            mostrarMensagem("Conta criada!", true);
+        mostrarMensagem("Conta criada!", true);
 
-           setTimeout(()=>{
-              renderLogin();
-            },1500);
+        setTimeout(()=>{
+            renderLogin();
+        },1500);
 
-        }else if(data.erro){
+    }else if(data.erro){
 
-               mostrarMensagem(data.erro, false);
+        mostrarMensagem(data.erro, false);
 
-        }else{
+    }else{
 
-            mostrarMensagem("Erro ao cadastrar!", false);
+        mostrarMensagem("Erro ao cadastrar!", false);
 
-        }
+    }
 
-    };
+};
     
 
 
