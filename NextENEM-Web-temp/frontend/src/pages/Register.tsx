@@ -8,17 +8,20 @@ export default function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   async function handleRegister() {
-  try {
-    await api.post('/auth/register', { name, email, password })
-    alert('Cadastro realizado! Verifique seu email para ativar a conta.')
-    navigate('/')
-  } catch (error: any) {
-    const msg = error.response?.data?.detail || 'Erro ao cadastrar. Tente outro email.'
-    setError(msg)
+    setError('')
+    setSuccess('')
+    try {
+      await api.post('/auth/register', { name, email, password })
+      setSuccess('Cadastro realizado! Verifique seu email para ativar a conta.')
+      setTimeout(() => navigate('/'), 3000)
+    } catch (error: any) {
+      const msg = error.response?.data?.detail || 'Erro ao cadastrar. Tente outro email.'
+      setError(msg)
+    }
   }
-}
 
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center">
@@ -26,7 +29,17 @@ export default function Register() {
         <h1 className="text-3xl font-bold text-white mb-2 text-center">NextENEM</h1>
         <p className="text-gray-400 text-center mb-6">Crie sua conta</p>
 
-        {error && <p className="text-red-400 text-sm mb-4 text-center">{error}</p>}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm mb-4 px-4 py-3 rounded-lg text-center">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="bg-green-500/10 border border-green-500/30 text-green-400 text-sm mb-4 px-4 py-3 rounded-lg text-center">
+            {success}
+          </div>
+        )}
 
         <input
           type="text"

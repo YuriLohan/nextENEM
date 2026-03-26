@@ -1,4 +1,4 @@
-/*import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 
@@ -118,4 +118,4 @@ export default function Questions() {
       </main>
     </div>
   )
-}*/
+}

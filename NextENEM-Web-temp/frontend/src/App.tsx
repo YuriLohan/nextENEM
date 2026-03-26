@@ -1,8 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+import React from 'react'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Home from './pages/Home'
-import React from 'react'
+import Questions from './pages/Questions'
 
 function PrivateRoute({ children }: { children: React.ReactElement }) {
   const token = localStorage.getItem('token')
@@ -17,6 +18,11 @@ export default function App() {
       <Route path="/home" element={
         <PrivateRoute>
           <Home />
+        </PrivateRoute>
+      } />
+      <Route path="/questions" element={
+        <PrivateRoute>
+          <Questions />
         </PrivateRoute>
       } />
     </Routes>
