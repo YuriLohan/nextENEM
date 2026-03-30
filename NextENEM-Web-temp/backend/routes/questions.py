@@ -16,10 +16,10 @@ async def get_random_question():
     
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
-            # Busca lista de questões do ano
             res = await client.get(f"{ENEM_API_BASE}/exams/{year}/questions")
             res.raise_for_status()
-            questions = res.json()
+            data = res.json()
+            questions = data.get("questions", [])
 
             if not questions:
                 raise HTTPException(status_code=404, detail="Nenhuma questão encontrada")
@@ -40,7 +40,8 @@ async def get_questions_by_year(year: int):
         async with httpx.AsyncClient(timeout=10.0) as client:
             res = await client.get(f"{ENEM_API_BASE}/exams/{year}/questions")
             res.raise_for_status()
-            return res.json()
+            data = res.json()
+            return data.get("questions", [])
 
     except httpx.HTTPError as e:
         raise HTTPException(status_code=502, detail=f"Erro ao buscar questões: {str(e)}")
