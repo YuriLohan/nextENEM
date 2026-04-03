@@ -9,18 +9,26 @@ export default function Register() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [verificationLink, setVerificationLink] = useState('') // ✅ novo estado
 
   async function handleRegister() {
     setError('')
     setSuccess('')
+    setVerificationLink('')
     try {
-      await api.post('/auth/register', { name, email, password })
-      setSuccess('Cadastro realizado! Verifique seu email para ativar a conta.')
-      setTimeout(() => navigate('/'), 3000)
+      const res = await api.post('/auth/register', { name, email, password })
+      setSuccess(res.data.message)
+      setVerificationLink(res.data.verification_link) // ✅ captura o link
     } catch (error: any) {
       const msg = error.response?.data?.detail || 'Erro ao cadastrar. Tente outro email.'
       setError(msg)
     }
+  }
+
+  // ✅ Abre o link e redireciona para login após 2s
+  async function handleVerify() {
+    window.location.href = verificationLink
+    setTimeout(() => navigate('/'), 2000)
   }
 
   return (
@@ -41,33 +49,47 @@ export default function Register() {
           </div>
         )}
 
-        <input
-          type="text"
-          placeholder="Nome completo"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 mb-3 outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 mb-3 outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 mb-5 outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          onClick={handleRegister}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
-        >
-          Cadastrar
-        </button>
+        {/* ✅ Botão de verificação aparece automaticamente após cadastro */}
+        {verificationLink && (
+          <button
+            onClick={handleVerify}
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition mb-4"
+          >
+            ✅ Verificar meu email agora
+          </button>
+        )}
+
+        {!verificationLink && (
+          <>
+            <input
+              type="text"
+              placeholder="Nome completo"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 mb-3 outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 mb-3 outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="password"
+              placeholder="Senha"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 mb-5 outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={handleRegister}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
+            >
+              Cadastrar
+            </button>
+          </>
+        )}
 
         <p className="text-gray-400 text-center mt-4 text-sm">
           Já tem conta?{' '}

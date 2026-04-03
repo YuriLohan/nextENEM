@@ -127,7 +127,24 @@ python -m aiosmtpd -n -l localhost:1025
 ```
 
 ---
+## Como rodar após tudo instalado
+```
+# 1. Terminal 1 — Backend
+cd NextENEM-Web-temp/backend
+.venv\Scripts\activate
+uvicorn main:app --reload
 
+# 2. Terminal 2 — SMTP fake (para o email de verificação funcionar)
+cd NextENEM-Web-temp/backend
+.venv\Scripts\activate
+python -m aiosmtpd -n -l localhost:1025
+
+# 3. Terminal 3 — Frontend
+cd NextENEM-Web/frontend
+npm run dev
+
+Depois acesse http://localhost:5173 no navegador. Os três precisam estar rodando ao mesmo tempo para o sistema funcionar completo.
+```
 ## Variáveis de ambiente (backend/.env)
  
 ```env
