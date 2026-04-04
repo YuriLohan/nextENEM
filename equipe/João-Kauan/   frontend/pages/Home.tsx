@@ -1,37 +1,14 @@
 import { useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
  
 export default function Home() {
   const navigate = useNavigate()
   const name = localStorage.getItem('name') || 'Estudante'
-  const [quote, setQuote] = useState<{ text: string; author: string } | null>(null)
  
   function handleLogout() {
     localStorage.removeItem('token')
     localStorage.removeItem('name')
     navigate('/')
   }
- 
-  useEffect(() => {
-    async function fetchQuote() {
-      try {
-          const frases = [
-    { text: 'O sucesso é a soma de pequenos esforços repetidos dia após dia.', author: 'Robert Collier' },
-    { text: 'A educação é a arma mais poderosa que você pode usar para mudar o mundo.', author: 'Nelson Mandela' },
-    { text: 'O único lugar onde o sucesso vem antes do trabalho é no dicionário.', author: 'Vidal Sassoon' },
-    { text: 'Investir em conhecimento sempre paga os melhores juros.', author: 'Benjamin Franklin' },
-    { text: 'Não importa o quão devagar você vá, desde que não pare.', author: 'Confúcio' },
-    { text: 'A persistência é o caminho do êxito.', author: 'Charlie Chaplin' },
-    { text: 'Você nunca sabe que resultados virão da sua ação. Mas se você não fizer nada, não existirão resultados.', author: 'Mahatma Gandhi' },
-  ]
-  const aleatoria = frases[Math.floor(Math.random() * frases.length)]
-  setQuote(aleatoria)
-      } catch {
-        setQuote({ text: 'O sucesso é a soma de pequenos esforços repetidos dia após dia.', author: 'Robert Collier' })
-      }
-    }
-    fetchQuote()
-  }, [])
  
   return (
     <div style={{ minHeight: '100vh', background: '#f1f5f9', fontFamily: "'Segoe UI', sans-serif" }}>
@@ -44,111 +21,88 @@ export default function Home() {
         alignItems: 'center',
         boxShadow: '0 4px 16px rgba(14,165,233,0.3)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{
-            width: '36px', height: '36px', borderRadius: '50%',
-            background: 'rgba(255,255,255,0.2)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <span style={{ fontSize: '16px', fontWeight: '800', color: '#fff' }}>NE</span>
-          </div>
-          <span style={{ color: '#fff', fontWeight: '800', fontSize: '18px' }}>NextENEM</span>
-        </div>
+        <h1 style={{ color: '#fff', fontWeight: '800', fontSize: '20px', margin: 0, letterSpacing: '-0.5px' }}>
+          NextENEM
+        </h1>
         <button
           onClick={handleLogout}
           style={{
             background: 'rgba(255,255,255,0.2)',
-            border: 'none', color: '#fff',
-            padding: '6px 14px', borderRadius: '20px',
-            fontSize: '13px', cursor: 'pointer', fontWeight: '600',
+            border: 'none',
+            color: '#fff',
+            padding: '6px 14px',
+            borderRadius: '20px',
+            fontSize: '13px',
+            cursor: 'pointer',
+            fontWeight: '600',
           }}
         >
           Sair
         </button>
       </header>
  
-      <main style={{ maxWidth: '520px', margin: '0 auto', padding: '24px 16px 40px' }}>
-        {/* Greeting */}
-        <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#1e293b', margin: '0 0 20px', letterSpacing: '-0.5px' }}>
+      <main style={{ maxWidth: '480px', margin: '0 auto', padding: '40px 16px' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#1e293b', margin: '0 0 4px', letterSpacing: '-0.5px' }}>
           Olá, {name}! 👋
         </h2>
+        <p style={{ color: '#64748b', marginBottom: '32px', fontSize: '15px' }}>
+          O que vamos estudar hoje?
+        </p>
  
-        {/* Frase do dia */}
-        <div style={{
-          background: '#fff',
-          borderRadius: '20px',
-          padding: '20px',
-          marginBottom: '16px',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
-          borderLeft: '4px solid #0ea5e9',
-        }}>
-          <p style={{ color: '#64748b', fontSize: '12px', fontWeight: '600', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            💬 Frase do dia
-          </p>
-          {quote ? (
-            <>
-              <p style={{ color: '#1e293b', fontSize: '14px', lineHeight: '1.6', margin: '0 0 8px', fontStyle: 'italic' }}>
-                "{quote.text}"
-              </p>
-              <p style={{ color: '#94a3b8', fontSize: '12px', margin: 0, fontWeight: '600' }}>
-                — {quote.author}
-              </p>
-            </>
-          ) : (
-            <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0 }}>Carregando frase...</p>
-          )}
-        </div>
- 
-        {/* Continuar estudando */}
-        <div style={{
-          background: 'linear-gradient(135deg, #0ea5e9, #0369a1)',
-          borderRadius: '20px',
-          padding: '20px',
-          marginBottom: '16px',
-          cursor: 'pointer',
-          boxShadow: '0 6px 20px rgba(14,165,233,0.35)',
-        }}
-          onClick={() => navigate('/questions')}
-        >
-          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '12px', fontWeight: '600', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            Continuar estudando...
-          </p>
-          <p style={{ color: '#fff', fontSize: '18px', fontWeight: '800', margin: '0 0 4px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <button
+            onClick={() => navigate('/questions')}
+            style={{
+              padding: '20px',
+              background: 'linear-gradient(135deg, #0ea5e9, #0369a1)',
+              border: 'none',
+              borderRadius: '16px',
+              color: '#fff',
+              fontWeight: '700',
+              fontSize: '16px',
+              cursor: 'pointer',
+              boxShadow: '0 6px 20px rgba(14,165,233,0.4)',
+              transition: 'opacity 0.2s',
+            }}
+            onMouseOver={e => (e.currentTarget.style.opacity = '0.9')}
+            onMouseOut={e => (e.currentTarget.style.opacity = '1')}
+          >
             📝 Praticar Questões
-          </p>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px', margin: 0 }}>
-            Questões do ENEM de todos os anos
-          </p>
-        </div>
+          </button>
  
-        {/* Em breve cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-          <div style={{
-            background: '#fff',
-            borderRadius: '16px',
-            padding: '18px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-            opacity: 0.7,
-          }}>
-            <p style={{ fontSize: '22px', margin: '0 0 6px' }}>📚</p>
-            <p style={{ color: '#1e293b', fontWeight: '700', fontSize: '14px', margin: '0 0 4px' }}>Conteúdos</p>
-            <p style={{ color: '#94a3b8', fontSize: '12px', margin: 0 }}>Em breve</p>
-          </div>
+          <button
+            disabled
+            style={{
+              padding: '20px',
+              background: '#fff',
+              border: '2px solid #e2e8f0',
+              borderRadius: '16px',
+              color: '#94a3b8',
+              fontWeight: '600',
+              fontSize: '16px',
+              cursor: 'not-allowed',
+            }}
+          >
+            📚 Conteúdos (em breve)
+          </button>
  
-          <div style={{
-            background: '#fff',
-            borderRadius: '16px',
-            padding: '18px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-            opacity: 0.7,
-          }}>
-            <p style={{ fontSize: '22px', margin: '0 0 6px' }}>📊</p>
-            <p style={{ color: '#1e293b', fontWeight: '700', fontSize: '14px', margin: '0 0 4px' }}>Desempenho</p>
-            <p style={{ color: '#94a3b8', fontSize: '12px', margin: 0 }}>Em breve</p>
-          </div>
+          <button
+            disabled
+            style={{
+              padding: '20px',
+              background: '#fff',
+              border: '2px solid #e2e8f0',
+              borderRadius: '16px',
+              color: '#94a3b8',
+              fontWeight: '600',
+              fontSize: '16px',
+              cursor: 'not-allowed',
+            }}
+          >
+            📊 Desempenho (em breve)
+          </button>
         </div>
       </main>
     </div>
   )
 }
- 
