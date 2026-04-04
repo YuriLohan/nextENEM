@@ -9,32 +9,25 @@ export default function Register() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [verificationLink, setVerificationLink] = useState('') // ✅ novo estado
-
+  const [registered, setRegistered] = useState(false)
+ 
   async function handleRegister() {
     setError('')
     setSuccess('')
-    setVerificationLink('')
     try {
-      const res = await api.post('/auth/register', { name, email, password })
-      setSuccess(res.data.message)
-      setVerificationLink(res.data.verification_link) // ✅ captura o link
+      await api.post('/auth/register', { name, email, password })
+      setSuccess('Cadastro realizado! Verifique seu email para ativar a conta.')
+      setRegistered(true)
     } catch (error: any) {
-      const msg = error.response?.data?.detail || 'Erro ao cadastrar. Tente outro email.'
-      setError(msg)
-    }
+    const msg = error.response?.data?.detail || 'Erro ao cadastrar. Tente outro email.'
+    setError(msg)
   }
-
-  // ✅ Abre o link e redireciona para login após 2s
-  async function handleVerify() {
-    window.location.href = verificationLink
-    setTimeout(() => navigate('/'), 2000)
-  }
-
+}
+ 
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(160deg, #0ea5e9 0%, #0284c7 40%, #0369a1 100%)',
+      background: '#030712',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -42,12 +35,12 @@ export default function Register() {
       padding: '24px',
     }}>
       <div style={{
-        background: '#fff',
-        borderRadius: '32px',
+        background: '#111827',
+        borderRadius: '24px',
         padding: '40px 32px 32px',
         width: '100%',
         maxWidth: '380px',
-        boxShadow: '0 24px 60px rgba(0,0,0,0.18)',
+        boxShadow: '0 24px 60px rgba(0,0,0,0.4)',
       }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
@@ -55,12 +48,11 @@ export default function Register() {
             width: '72px',
             height: '72px',
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #0ea5e9, #0369a1)',
+            background: '#1d4ed8',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: '12px',
-            boxShadow: '0 8px 24px rgba(14,165,233,0.35)',
           }}>
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
               <circle cx="18" cy="14" r="7" stroke="white" strokeWidth="2.5" fill="none"/>
@@ -71,11 +63,11 @@ export default function Register() {
           <h1 style={{
             fontSize: '26px',
             fontWeight: '800',
-            color: '#0369a1',
+            color: '#60a5fa',
             margin: '0 0 4px',
             letterSpacing: '-0.5px',
-          }}>Next Enem</h1>
-          <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>
+          }}>NextENEM</h1>
+          <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>
             Crie sua conta gratuitamente
           </p>
         </div>
@@ -83,8 +75,9 @@ export default function Register() {
         {/* Error */}
         {error && (
           <div style={{
-            background: '#fee2e2',
-            color: '#dc2626',
+            background: 'rgba(239,68,68,0.1)',
+            border: '1px solid rgba(239,68,68,0.3)',
+            color: '#f87171',
             borderRadius: '12px',
             padding: '10px 14px',
             fontSize: '13px',
@@ -98,8 +91,9 @@ export default function Register() {
         {/* Success */}
         {success && (
           <div style={{
-            background: '#dcfce7',
-            color: '#15803d',
+            background: 'rgba(34,197,94,0.1)',
+            border: '1px solid rgba(34,197,94,0.3)',
+            color: '#4ade80',
             borderRadius: '12px',
             padding: '10px 14px',
             fontSize: '13px',
@@ -109,52 +103,133 @@ export default function Register() {
             {success}
           </div>
         )}
-
-        {/* ✅ Botão de verificação aparece automaticamente após cadastro */}
-        {verificationLink && (
-          <button
-            onClick={handleVerify}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition mb-4"
-          >
-            ✅ Verificar meu email agora
-          </button>
-        )}
-
-        {!verificationLink && (
-          <>
-            <input
-              type="text"
-              placeholder="Nome completo"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 mb-3 outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 mb-3 outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="password"
-              placeholder="Senha"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 mb-5 outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              onClick={handleRegister}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
-            >
-              Cadastrar
-            </button>
-          </>
-        )}
-
-        <p className="text-gray-400 text-center mt-4 text-sm">
+        {registered && (
+     <button
+    onClick={() => window.open('http://localhost:5173/inbox', '_blank')}
+    style={{
+      width: '100%',
+      padding: '15px',
+      background: '#16a34a',
+      color: '#fff',
+      fontWeight: '700',
+      fontSize: '15px',
+      border: 'none',
+      borderRadius: '12px',
+      cursor: 'pointer',
+      marginBottom: '16px',
+    }}
+  >
+    📥 Ir para Caixa de Entrada
+  </button>
+)}
+ 
+        {/* Name field */}
+        <div style={{ position: 'relative', marginBottom: '14px' }}>
+          <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#4b5563' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
+          </span>
+          <input
+            type="text"
+            placeholder="Nome completo"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '14px 14px 14px 44px',
+              border: 'none',
+              borderRadius: '12px',
+              fontSize: '14px',
+              color: '#fff',
+              outline: 'none',
+              boxSizing: 'border-box',
+              background: '#1f2937',
+            }}
+          />
+        </div>
+ 
+        {/* Email field */}
+        <div style={{ position: 'relative', marginBottom: '14px' }}>
+          <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#4b5563' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="3"/>
+              <path d="M2 7l10 7 10-7"/>
+            </svg>
+          </span>
+          <input
+            type="email"
+            placeholder="email@dominio.com"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '14px 14px 14px 44px',
+              border: 'none',
+              borderRadius: '12px',
+              fontSize: '14px',
+              color: '#fff',
+              outline: 'none',
+              boxSizing: 'border-box',
+              background: '#1f2937',
+            }}
+          />
+        </div>
+ 
+        {/* Password field */}
+        <div style={{ position: 'relative', marginBottom: '24px' }}>
+          <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#4b5563' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </span>
+          <input
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '14px 14px 14px 44px',
+              border: 'none',
+              borderRadius: '12px',
+              fontSize: '14px',
+              color: '#fff',
+              outline: 'none',
+              boxSizing: 'border-box',
+              background: '#1f2937',
+            }}
+          />
+        </div>
+ 
+        {/* Register button */}
+        <button
+          onClick={handleRegister}
+          style={{
+            width: '100%',
+            padding: '15px',
+            background: '#2563eb',
+            color: '#fff',
+            fontWeight: '700',
+            fontSize: '15px',
+            border: 'none',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            marginBottom: '20px',
+            transition: 'background 0.2s',
+          }}
+          onMouseOver={e => (e.currentTarget.style.background = '#1d4ed8')}
+          onMouseOut={e => (e.currentTarget.style.background = '#2563eb')}
+        >
+          Cadastrar
+        </button>
+ 
+        {/* Footer */}
+        <p style={{ textAlign: 'center', fontSize: '13px', color: '#6b7280', margin: 0 }}>
           Já tem conta?{' '}
-          <Link to="/" style={{ color: '#0ea5e9', fontWeight: '600', textDecoration: 'none' }}>
+          <Link to="/" style={{ color: '#60a5fa', fontWeight: '600', textDecoration: 'none' }}>
             Entrar
           </Link>
         </p>
