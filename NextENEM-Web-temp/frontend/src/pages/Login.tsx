@@ -23,7 +23,7 @@ export default function Login() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(160deg, #0ea5e9 0%, #0284c7 40%, #0369a1 100%)',
+      background: '#030712',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -31,40 +31,39 @@ export default function Login() {
       padding: '24px',
     }}>
       <div style={{
-        background: '#fff',
-        borderRadius: '32px',
+        background: '#111827',
+        borderRadius: '24px',
         padding: '40px 32px 32px',
         width: '100%',
         maxWidth: '380px',
-        boxShadow: '0 24px 60px rgba(0,0,0,0.18)',
+        boxShadow: '0 24px 60px rgba(0,0,0,0.4)',
       }}>
+ 
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div style={{
             width: '72px',
             height: '72px',
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #0ea5e9, #0369a1)',
+            background: '#1d4ed8',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: '12px',
-            boxShadow: '0 8px 24px rgba(14,165,233,0.35)',
           }}>
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
               <circle cx="18" cy="14" r="7" stroke="white" strokeWidth="2.5" fill="none"/>
               <path d="M10 28c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-              <path d="M22 11l2 2-2 2" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
           <h1 style={{
             fontSize: '26px',
             fontWeight: '800',
-            color: '#0369a1',
+            color: '#60a5fa',
             margin: '0 0 4px',
             letterSpacing: '-0.5px',
-          }}>Next Enem</h1>
-          <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>
+          }}>NextENEM</h1>
+          <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>
             Entre na sua conta para continuar aprendendo
           </p>
         </div>
@@ -72,8 +71,9 @@ export default function Login() {
         {/* Error */}
         {error && (
           <div style={{
-            background: '#fee2e2',
-            color: '#dc2626',
+            background: 'rgba(239,68,68,0.1)',
+            border: '1px solid rgba(239,68,68,0.3)',
+            color: '#f87171',
             borderRadius: '12px',
             padding: '10px 14px',
             fontSize: '13px',
@@ -84,12 +84,9 @@ export default function Login() {
           </div>
         )}
  
-        {/* Email field */}
+        {/* Email */}
         <div style={{ position: 'relative', marginBottom: '14px' }}>
-          <span style={{
-            position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
-            color: '#94a3b8',
-          }}>
+          <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#4b5563' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="4" width="20" height="16" rx="3"/>
               <path d="M2 7l10 7 10-7"/>
@@ -103,26 +100,20 @@ export default function Login() {
             style={{
               width: '100%',
               padding: '14px 14px 14px 44px',
-              border: '1.5px solid #e2e8f0',
-              borderRadius: '14px',
+              border: 'none',
+              borderRadius: '12px',
               fontSize: '14px',
-              color: '#1e293b',
+              color: '#fff',
               outline: 'none',
               boxSizing: 'border-box',
-              background: '#f8fafc',
-              transition: 'border-color 0.2s',
+              background: '#1f2937',
             }}
-            onFocus={e => e.target.style.borderColor = '#0ea5e9'}
-            onBlur={e => e.target.style.borderColor = '#e2e8f0'}
           />
         </div>
  
-        {/* Password field */}
+        {/* Password */}
         <div style={{ position: 'relative', marginBottom: '24px' }}>
-          <span style={{
-            position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
-            color: '#94a3b8',
-          }}>
+          <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#4b5563' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -136,17 +127,14 @@ export default function Login() {
             style={{
               width: '100%',
               padding: '14px 14px 14px 44px',
-              border: '1.5px solid #e2e8f0',
-              borderRadius: '14px',
+              border: 'none',
+              borderRadius: '12px',
               fontSize: '14px',
-              color: '#1e293b',
+              color: '#fff',
               outline: 'none',
               boxSizing: 'border-box',
-              background: '#f8fafc',
-              transition: 'border-color 0.2s',
+              background: '#1f2937',
             }}
-            onFocus={e => e.target.style.borderColor = '#0ea5e9'}
-            onBlur={e => e.target.style.borderColor = '#e2e8f0'}
           />
         </div>
  
@@ -156,64 +144,62 @@ export default function Login() {
           style={{
             width: '100%',
             padding: '15px',
-            background: 'linear-gradient(135deg, #0ea5e9, #0369a1)',
+            background: '#2563eb',
             color: '#fff',
             fontWeight: '700',
             fontSize: '15px',
             border: 'none',
-            borderRadius: '14px',
+            borderRadius: '12px',
             cursor: 'pointer',
             marginBottom: '14px',
-            boxShadow: '0 6px 20px rgba(14,165,233,0.4)',
-            transition: 'opacity 0.2s',
+            transition: 'background 0.2s',
           }}
-          onMouseOver={e => (e.currentTarget.style.opacity = '0.9')}
-          onMouseOut={e => (e.currentTarget.style.opacity = '1')}
+          onMouseOver={e => (e.currentTarget.style.background = '#1d4ed8')}
+          onMouseOut={e => (e.currentTarget.style.background = '#2563eb')}
         >
           Entrar
         </button>
  
-        {/* Google button */}
+        {/* Google */}
         <button
           style={{
             width: '100%',
             padding: '14px',
-            background: '#fff',
-            color: '#374151',
-            fontWeight: '600',
-            fontSize: '14px',
-            border: '1.5px solid #e2e8f0',
-            borderRadius: '14px',
+            background: '#1f2937',
+            border: 'none',
+            borderRadius: '12px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '10px',
             cursor: 'pointer',
             marginBottom: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
-            transition: 'background 0.2s',
+            color: '#d1d5db',
+            fontSize: '14px',
+            fontWeight: '600',
           }}
-          onMouseOver={e => (e.currentTarget.style.background = '#f8fafc')}
-          onMouseOut={e => (e.currentTarget.style.background = '#fff')}
         >
           <svg width="18" height="18" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#4285F4" d="M22.56 12.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+            <path fill="#FBBC05" d="M5.84 14.09A6.5 6.5 0 0 1 5.5 12c0-.73.13-1.43.35-2.09V7.07H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.93l3.66-2.84z"/>
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
           </svg>
           Continuar com o Google
         </button>
  
-        {/* Footer links */}
-        <p style={{ textAlign: 'center', fontSize: '13px', color: '#94a3b8', marginBottom: '6px' }}>
+        {/* Footer */}
+        <p style={{ textAlign: 'center', fontSize: '13px', color: '#6b7280', margin: '0 0 8px' }}>
           Esqueceu sua senha?
         </p>
-        <p style={{ textAlign: 'center', fontSize: '13px', color: '#64748b', margin: 0 }}>
+ 
+        <p style={{ textAlign: 'center', fontSize: '13px', color: '#6b7280', margin: 0 }}>
           Não tem conta?{' '}
-          <Link to="/register" style={{ color: '#0ea5e9', fontWeight: '600', textDecoration: 'none' }}>
+          <Link to="/register" style={{ color: '#60a5fa', fontWeight: '600', textDecoration: 'none' }}>
             Criar agora
           </Link>
         </p>
+ 
       </div>
     </div>
   )
