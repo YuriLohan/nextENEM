@@ -12,6 +12,8 @@ import uuid
 import smtplib
 from email.mime.text import MIMEText
 import os
+from fastapi.responses import RedirectResponse
+
 
 load_dotenv()
 
@@ -108,7 +110,12 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
 
     send_verification_email(user.email, verification_token)
 
-    return {"message": "Usuário criado com sucesso. Verifique seu email para ativar a conta."}
+    # ✅ Retorna o link direto na resposta
+    verification_link = f"http://localhost:8000/auth/verify-email?token={verification_token}"
+    return {
+        "message": "Usuário criado! Clique no link para verificar seu email.",
+        "verification_link": verification_link
+    }
 
 
 @router.post("/login")
@@ -136,7 +143,7 @@ def verify_email(token: str = Query(...), db: Session = Depends(get_db)):
     user.verification_token = None
     db.commit()
     print(f"[INFO] Usuário {user.email} verificado com sucesso!", flush=True)
-    return {"message": "Email verificado com sucesso. Agora você pode fazer login."}
+    return RedirectResponse(url="http://localhost:5173/verified")
 
 
 @router.get("/me")
