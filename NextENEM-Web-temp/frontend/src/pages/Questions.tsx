@@ -61,20 +61,20 @@ export default function Questions() {
       textAlign: 'left',
       cursor: answered ? 'default' : 'pointer',
       transition: 'all 0.2s',
-      background: '#fff',
-      borderColor: '#e2e8f0',
-      color: '#1e293b',
+      background: '#1f2937',
+      borderColor: '#374151',
+      color: '#d1d5db',
     }
  
     if (!answered) return base
  
     if (letter === question?.correctAlternative) {
-      return { ...base, background: '#dcfce7', borderColor: '#22c55e', color: '#15803d' }
+      return { ...base, background: 'rgba(34,197,94,0.15)', borderColor: '#22c55e', color: '#4ade80' }
     }
     if (letter === selected) {
-      return { ...base, background: '#fee2e2', borderColor: '#ef4444', color: '#b91c1c' }
+      return { ...base, background: 'rgba(239,68,68,0.15)', borderColor: '#ef4444', color: '#f87171' }
     }
-    return { ...base, opacity: 0.5 }
+    return { ...base, opacity: 0.4 }
   }
  
   function getLetterStyle(letter: string) {
@@ -87,8 +87,8 @@ export default function Questions() {
       justifyContent: 'center',
       fontWeight: '700',
       fontSize: '13px',
-      background: '#e2e8f0',
-      color: '#475569',
+      background: '#374151',
+      color: '#9ca3af',
     }
  
     if (!answered) return base
@@ -103,25 +103,25 @@ export default function Questions() {
   }
  
   return (
-    <div style={{ minHeight: '100vh', background: '#f1f5f9', fontFamily: "'Segoe UI', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#030712', fontFamily: "'Segoe UI', sans-serif" }}>
       {/* Header */}
       <header style={{
-        background: 'linear-gradient(135deg, #0ea5e9, #0369a1)',
+        background: '#111827',
         padding: '16px 24px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        boxShadow: '0 4px 16px rgba(14,165,233,0.3)',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
       }}>
-        <h1 style={{ color: '#fff', fontWeight: '800', fontSize: '20px', margin: 0, letterSpacing: '-0.5px' }}>
+        <h1 style={{ color: '#60a5fa', fontWeight: '800', fontSize: '20px', margin: 0, letterSpacing: '-0.5px' }}>
           NextENEM
         </h1>
         <button
           onClick={() => navigate('/home')}
           style={{
-            background: 'rgba(255,255,255,0.2)',
+            background: '#1f2937',
             border: 'none',
-            color: '#fff',
+            color: '#9ca3af',
             padding: '6px 14px',
             borderRadius: '20px',
             fontSize: '13px',
@@ -135,36 +135,38 @@ export default function Questions() {
  
       <main style={{ maxWidth: '680px', margin: '0 auto', padding: '24px 16px 100px' }}>
         {loading && (
-          <p style={{ color: '#64748b', textAlign: 'center', marginTop: '40px' }}>Carregando questão...</p>
+          <p style={{ color: '#6b7280', textAlign: 'center', marginTop: '40px' }}>Carregando questão...</p>
         )}
  
         {!loading && !question && (
-          <p style={{ color: '#ef4444', textAlign: 'center', marginTop: '40px' }}>Erro ao carregar questão. Tente novamente.</p>
+          <p style={{ color: '#f87171', textAlign: 'center', marginTop: '40px' }}>Erro ao carregar questão. Tente novamente.</p>
         )}
  
         {!loading && question && (
           <>
             {/* Discipline badge */}
             <div style={{
-              background: 'linear-gradient(135deg, #0ea5e9, #0369a1)',
+              background: '#111827',
               borderRadius: '16px',
               padding: '12px 20px',
               marginBottom: '16px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
+              borderLeft: '4px solid #2563eb',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
             }}>
               <div>
-                <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '12px', margin: '0 0 2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <p style={{ color: '#6b7280', fontSize: '12px', margin: '0 0 2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   {question.discipline}
                 </p>
-                <p style={{ color: '#fff', fontSize: '13px', margin: 0, fontWeight: '600' }}>
+                <p style={{ color: '#d1d5db', fontSize: '13px', margin: 0, fontWeight: '600' }}>
                   ENEM {question.year} · Questão {question.index}
                 </p>
               </div>
               <span style={{
-                background: 'rgba(255,255,255,0.2)',
-                color: '#fff',
+                background: '#1f2937',
+                color: '#60a5fa',
                 padding: '4px 12px',
                 borderRadius: '20px',
                 fontSize: '12px',
@@ -176,13 +178,13 @@ export default function Questions() {
  
             {/* Question card */}
             <div style={{
-              background: '#fff',
+              background: '#111827',
               borderRadius: '20px',
               padding: '24px',
               marginBottom: '16px',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
             }}>
-              <p style={{ color: '#1e293b', lineHeight: '1.7', fontSize: '15px', margin: 0 }}>
+              <p style={{ color: '#d1d5db', lineHeight: '1.7', fontSize: '15px', margin: 0 }}>
                 {question.context}
               </p>
  
@@ -191,7 +193,7 @@ export default function Questions() {
               ))}
  
               {question.alternativesIntroduction && (
-                <p style={{ color: '#475569', marginTop: '16px', fontSize: '14px', marginBottom: 0 }}>
+                <p style={{ color: '#9ca3af', marginTop: '16px', fontSize: '14px', marginBottom: 0 }}>
                   {question.alternativesIntroduction}
                 </p>
               )}
@@ -214,8 +216,11 @@ export default function Questions() {
             {/* Feedback */}
             {answered && (
               <div style={{
-                background: selected === question.correctAlternative ? '#dcfce7' : '#fee2e2',
-                color: selected === question.correctAlternative ? '#15803d' : '#b91c1c',
+                background: selected === question.correctAlternative
+                  ? 'rgba(34,197,94,0.1)'
+                  : 'rgba(239,68,68,0.1)',
+                color: selected === question.correctAlternative ? '#4ade80' : '#f87171',
+                border: `1px solid ${selected === question.correctAlternative ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
                 borderRadius: '14px',
                 padding: '14px',
                 textAlign: 'center',
@@ -235,10 +240,10 @@ export default function Questions() {
                 style={{
                   flex: 1,
                   padding: '15px',
-                  background: '#fff',
-                  border: '2px solid #e2e8f0',
+                  background: '#111827',
+                  border: '2px solid #1f2937',
                   borderRadius: '14px',
-                  color: '#64748b',
+                  color: '#6b7280',
                   fontWeight: '600',
                   fontSize: '14px',
                   cursor: 'pointer',
@@ -251,14 +256,14 @@ export default function Questions() {
                 style={{
                   flex: 2,
                   padding: '15px',
-                  background: 'linear-gradient(135deg, #0ea5e9, #0369a1)',
+                  background: '#2563eb',
                   border: 'none',
                   borderRadius: '14px',
                   color: '#fff',
                   fontWeight: '700',
                   fontSize: '15px',
                   cursor: 'pointer',
-                  boxShadow: '0 6px 20px rgba(14,165,233,0.4)',
+                  boxShadow: '0 6px 20px rgba(37,99,235,0.4)',
                 }}
               >
                 Próxima →
@@ -270,3 +275,4 @@ export default function Questions() {
     </div>
   )
 }
+ 
