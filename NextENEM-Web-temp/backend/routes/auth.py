@@ -145,6 +145,17 @@ def verify_email(token: str = Query(...), db: Session = Depends(get_db)):
     print(f"[INFO] Usuário {user.email} verificado com sucesso!", flush=True)
     return RedirectResponse(url="http://localhost:5173/verified")
 
+@router.get("/get-verification-link")
+def get_verification_link(email: str = Query(...), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Email não encontrado")
+    if user.is_verified:
+        raise HTTPException(status_code=400, detail="Email já verificado")
+    if not user.verification_token:
+        raise HTTPException(status_code=400, detail="Token não encontrado")
+    link = f"http://localhost:8000/auth/verify-email?token={user.verification_token}"
+    return {"verification_link": link}
 
 @router.get("/me")
 def read_users_me(current_user: User = Depends(get_current_user)):

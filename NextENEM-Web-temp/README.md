@@ -79,7 +79,6 @@ cd NextENEM-Web-temp/backend
  
 # 2. Ative o ambiente virtual
 .venv\Scripts\activate       # Windows
-source .venv/bin/activate    # Linux/Mac
  
 # 3. Instale as dependências (apenas na primeira vez)
 pip install -r requirements.txt
@@ -128,7 +127,7 @@ python -m aiosmtpd -n -l localhost:1025
 
 ---
 ## Como rodar após tudo instalado
-```
+```bash
 # 1. Terminal 1 — Backend
 cd NextENEM-Web-temp/backend
 .venv\Scripts\activate

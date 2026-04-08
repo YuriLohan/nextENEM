@@ -24,20 +24,33 @@ export default function Questions() {
   const [selected, setSelected] = useState<string | null>(null)
   const [answered, setAnswered] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [id, setId] = useState(() => {
+  return Number(localStorage.getItem('questionId')) || 1
+  })
  
-  async function fetchQuestion() {
-    setLoading(true)
-    setSelected(null)
-    setAnswered(false)
-    try {
-      const res = await api.get('/questions/random')
-      setQuestion(res.data)
-    } catch {
-      setQuestion(null)
-    }
-    setLoading(false)
+async function fetchQuestion() {
+  setLoading(true)
+  setSelected(null)
+  setAnswered(false)
+
+  try {
+    const res = await api.get('/questions/random')
+    setQuestion(res.data)
+  } catch {
+    setQuestion(null)
   }
- 
+
+  setLoading(false)
+}
+
+function nextQuestion() {
+  setId(prev => {
+    const newId = prev + 1
+    localStorage.setItem('questionId', String(newId))
+    return newId
+  })
+  fetchQuestion()
+}
   useEffect(() => {
     fetchQuestion()
   }, [])
@@ -101,7 +114,7 @@ export default function Questions() {
     }
     return base
   }
- 
+  
   return (
     <div style={{ minHeight: '100vh', background: '#030712', fontFamily: "'Segoe UI', sans-serif" }}>
       {/* Header */}
@@ -172,7 +185,7 @@ export default function Questions() {
                 fontSize: '12px',
                 fontWeight: '600',
               }}>
-                #{question.index}
+                #{id}
               </span>
             </div>
  
@@ -252,7 +265,7 @@ export default function Questions() {
                 💡 Dica
               </button>
               <button
-                onClick={fetchQuestion}
+                onClick={nextQuestion}
                 style={{
                   flex: 2,
                   padding: '15px',
