@@ -108,7 +108,10 @@ export default function Home() {
           cursor: 'pointer',
           boxShadow: '0 6px 20px rgba(29,78,216,0.4)',
         }}
-          onClick={() => navigate('/questions')}
+          onClick={() => {
+            localStorage.setItem('questionId', '1')
+            navigate('/questions')
+          }}
         >
           <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', fontWeight: '600', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             Continuar estudando...
