@@ -50,7 +50,7 @@ export default function Login() {
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: '12px',
-          }}>
+          }}> {/*TODO: remover o svg e trocar pela imagem da nossa logo*/}
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
               <circle cx="18" cy="14" r="7" stroke="white" strokeWidth="2.5" fill="none"/>
               <path d="M10 28c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
