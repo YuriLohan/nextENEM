@@ -133,13 +133,6 @@ export default function Register() {
             </button>
           </>
         )}
-
-        <p style={{ textAlign: 'center', fontSize: '13px', color: '#6b7280', margin: 0 }}>
-          Já tem conta?{' '}
-          <Link to="/" style={{ color: '#60a5fa', fontWeight: '600', textDecoration: 'none' }}>
-            Entrar
-          </Link>
-        </p>
       </div>
     </div>
   )

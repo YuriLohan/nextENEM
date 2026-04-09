@@ -88,12 +88,6 @@ export default function Inbox() {
             </div>
           </div>
         )}
-
-        <p onClick={() => navigate('/register')}
-          style={{ color: '#6b7280', textAlign: 'center', marginTop: '20px', fontSize: '13px', cursor: 'pointer' }}
-        >
-          ← Voltar ao cadastro
-        </p>
       </div>
     </div>
   )
