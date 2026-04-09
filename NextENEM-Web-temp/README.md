@@ -78,6 +78,8 @@ SELECT * FROM users;
 cd NextENEM-Web-temp/backend
  
 # 2. Ative o ambiente virtual
+#caso você não tenha o venv instalado baixe ele por esse comando
+python -m venv .venv
 .venv\Scripts\activate       # Windows
  
 # 3. Instale as dependências (apenas na primeira vez)
