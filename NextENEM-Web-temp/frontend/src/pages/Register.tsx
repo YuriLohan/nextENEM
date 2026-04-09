@@ -12,12 +12,26 @@ export default function Register() {
   const [registered, setRegistered] = useState(false)
 
   async function handleRegister() {
-    setError('')
-    setSuccess('')
-    try {
-      await api.post('/auth/register', { name, email, password })
-      setSuccess('Cadastro realizado! Verifique seu email para ativar a conta.')
-      setRegistered(true)
+  setError('')
+  setSuccess('')
+    // ✅ Validação mínima
+  if (!name.trim() || !email.trim() || !password.trim()) {
+    setError('Todos os campos são obrigatórios')
+    return
+  }
+
+  // Validação básica de email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    setError('Email inválido')
+    return
+  }
+
+  try {
+    await api.post('/auth/register', { name, email, password })
+    setSuccess('Cadastro realizado! Verifique seu email para ativar a conta.')
+    setRegistered(true)
+    navigate('/inbox')
     } catch (error: any) {
       const msg = error.response?.data?.detail || 'Erro ao cadastrar. Tente outro email.'
       setError(msg)
@@ -133,6 +147,13 @@ export default function Register() {
             </button>
           </>
         )}
+
+        <p style={{ textAlign: 'center', fontSize: '13px', color: '#6b7280', margin: 0 }}>
+          Já tem conta?{' '}
+          <Link to="/" style={{ color: '#60a5fa', fontWeight: '600', textDecoration: 'none' }}>
+            Entrar
+          </Link>
+        </p>
       </div>
     </div>
   )
