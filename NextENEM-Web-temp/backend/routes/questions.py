@@ -2,35 +2,49 @@ from fastapi import APIRouter, HTTPException
 import httpx
 import random
 
+
+# ─────────────────────────────────────────
+# Configuração inicial
+# URL base da API do ENEM e lista de
+# anos com provas disponíveis
+# ─────────────────────────────────────────
 router = APIRouter()
 
 ENEM_API_BASE = "https://api.enem.dev/v1"
 
-# Anos disponíveis na API
 AVAILABLE_YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022]
 
 
+# ─────────────────────────────────────────
+# Rota — GET /random
+# Sorteia um ano disponível e retorna uma
+# questão aleatória da prova daquele ano
+# ─────────────────────────────────────────
 @router.get("/random")
 async def get_random_question():
     year = random.choice(AVAILABLE_YEARS)
-    
+
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             res = await client.get(f"{ENEM_API_BASE}/exams/{year}/questions")
             res.raise_for_status()
-            data = res.json()
-            questions = data.get("questions", [])
+            questions = res.json().get("questions", [])
 
             if not questions:
                 raise HTTPException(status_code=404, detail="Nenhuma questão encontrada")
 
-            question = random.choice(questions)
-            return question
+            return random.choice(questions)
 
     except httpx.HTTPError as e:
         raise HTTPException(status_code=502, detail=f"Erro ao buscar questão: {str(e)}")
 
 
+# ─────────────────────────────────────────
+# Rota — GET /by-year/{year}
+# Retorna todas as questões de um ano
+# específico, validando se ele está
+# disponível na API antes de buscar
+# ─────────────────────────────────────────
 @router.get("/by-year/{year}")
 async def get_questions_by_year(year: int):
     if year not in AVAILABLE_YEARS:
@@ -40,8 +54,7 @@ async def get_questions_by_year(year: int):
         async with httpx.AsyncClient(timeout=10.0) as client:
             res = await client.get(f"{ENEM_API_BASE}/exams/{year}/questions")
             res.raise_for_status()
-            data = res.json()
-            return data.get("questions", [])
+            return res.json().get("questions", [])
 
     except httpx.HTTPError as e:
         raise HTTPException(status_code=502, detail=f"Erro ao buscar questões: {str(e)}")

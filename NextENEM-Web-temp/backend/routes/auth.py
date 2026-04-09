@@ -1,20 +1,25 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi.security import OAuth2PasswordBearer
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from passlib.context import CryptContext
 from jose import JWTError, jwt
+from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from database import get_db
 from models import User
-from fastapi.security import OAuth2PasswordBearer
-from dotenv import load_dotenv
 import uuid
 import smtplib
 from email.mime.text import MIMEText
 import os
-from fastapi.responses import RedirectResponse
 
 
+# ─────────────────────────────────────────
+# Configuração inicial
+# Carrega variáveis de ambiente e define
+# constantes de autenticação JWT
+# ─────────────────────────────────────────
 load_dotenv()
 
 router = APIRouter()
@@ -27,6 +32,10 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+# ─────────────────────────────────────────
+# Schemas (Pydantic)
+# Validação dos dados recebidos nas rotas
+# ─────────────────────────────────────────
 class RegisterSchema(BaseModel):
     name: str
     email: str
@@ -38,6 +47,10 @@ class LoginSchema(BaseModel):
     password: str
 
 
+# ─────────────────────────────────────────
+# Funções utilitárias — Senha
+# Hash e verificação com bcrypt
+# ─────────────────────────────────────────
 def hash_password(password: str):
     return pwd_context.hash(password)
 
@@ -46,6 +59,10 @@ def verify_password(plain: str, hashed: str):
     return pwd_context.verify(plain, hashed)
 
 
+# ─────────────────────────────────────────
+# Funções utilitárias — JWT
+# Criação do token de acesso com expiração
+# ─────────────────────────────────────────
 def create_token(data: dict):
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -53,6 +70,11 @@ def create_token(data: dict):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
+# ─────────────────────────────────────────
+# Funções utilitárias — Email
+# Envia o link de verificação via SMTP local
+# (porta 1025 com aiosmtpd em desenvolvimento)
+# ─────────────────────────────────────────
 def send_verification_email(email: str, token: str):
     link = f"http://localhost:8000/auth/verify-email?token={token}"
     body = f"Olá! Por favor, confirme seu email clicando no link:\n\n{link}"
@@ -71,6 +93,10 @@ def send_verification_email(email: str, token: str):
         print(f"[WARN] Email não enviado (sem servidor SMTP local): {e}", flush=True)
 
 
+# ─────────────────────────────────────────
+# Funções utilitárias — Autenticação
+# Decodifica o JWT e retorna o usuário atual
+# ─────────────────────────────────────────
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -84,12 +110,19 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
+
     user = db.query(User).filter(User.email == email).first()
     if user is None:
         raise credentials_exception
     return user
 
 
+# ─────────────────────────────────────────
+# Rota — POST /register
+# Cria o usuário, gera token de verificação
+# e retorna o link direto na resposta JSON
+# para o fluxo da inbox simulada no frontend
+# ─────────────────────────────────────────
 @router.post("/register")
 def register(data: RegisterSchema, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == data.email).first()
@@ -110,7 +143,8 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
 
     send_verification_email(user.email, verification_token)
 
-    # ✅ Retorna o link direto na resposta
+    # Retorna o link de verificação diretamente na resposta JSON
+    # Útil para o fluxo da inbox simulada no frontend
     verification_link = f"http://localhost:8000/auth/verify-email?token={verification_token}"
     return {
         "message": "Usuário criado! Clique no link para verificar seu email.",
@@ -118,6 +152,11 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
     }
 
 
+# ─────────────────────────────────────────
+# Rota — POST /login
+# Valida credenciais e retorna JWT de acesso
+# Bloqueia login se email não foi verificado
+# ─────────────────────────────────────────
 @router.post("/login")
 def login(data: LoginSchema, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()
@@ -134,17 +173,32 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
     return {"access_token": token, "token_type": "bearer", "name": user.name}
 
 
+# ─────────────────────────────────────────
+# Rota — GET /verify-email
+# Valida o token UUID e marca o usuário
+# como verificado, depois redireciona
+# para a página de sucesso no frontend
+# ─────────────────────────────────────────
 @router.get("/verify-email")
 def verify_email(token: str = Query(...), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.verification_token == token).first()
     if not user:
         raise HTTPException(status_code=400, detail="Token inválido ou expirado")
+
     user.is_verified = True
     user.verification_token = None
     db.commit()
+
     print(f"[INFO] Usuário {user.email} verificado com sucesso!", flush=True)
     return RedirectResponse(url="http://localhost:5173/verified")
 
+
+# ─────────────────────────────────────────
+# Rota — GET /get-verification-link
+# Retorna o link de verificação para um
+# email já cadastrado mas ainda não verificado
+# Usado pela inbox simulada para buscar o link
+# ─────────────────────────────────────────
 @router.get("/get-verification-link")
 def get_verification_link(email: str = Query(...), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == email).first()
@@ -154,9 +208,16 @@ def get_verification_link(email: str = Query(...), db: Session = Depends(get_db)
         raise HTTPException(status_code=400, detail="Email já verificado")
     if not user.verification_token:
         raise HTTPException(status_code=400, detail="Token não encontrado")
+
     link = f"http://localhost:8000/auth/verify-email?token={user.verification_token}"
     return {"verification_link": link}
 
+
+# ─────────────────────────────────────────
+# Rota — GET /me
+# Retorna os dados do usuário autenticado
+# com base no JWT enviado no header
+# ─────────────────────────────────────────
 @router.get("/me")
 def read_users_me(current_user: User = Depends(get_current_user)):
     return {
