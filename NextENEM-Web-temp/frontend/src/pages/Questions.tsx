@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
- 
+import '../style/Questions.css'
+
 interface Alternative {
   letter: string
   text: string
 }
- 
+
 interface Question {
   index: number
   year: number
@@ -17,269 +18,210 @@ interface Question {
   alternatives: Alternative[]
   correctAlternative: string
 }
- 
+
+interface SavedSession {
+  questions: Question[]
+  answers: (string | null)[]
+  currentIndex: number
+  finished: boolean
+}
+
+const TOTAL = 10
+
 export default function Questions() {
   const navigate = useNavigate()
-  const [question, setQuestion] = useState<Question | null>(null)
+
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [answers, setAnswers] = useState<(string | null)[]>(Array(TOTAL).fill(null))
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [selected, setSelected] = useState<string | null>(null)
   const [answered, setAnswered] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [id, setId] = useState(() => {
-  return Number(localStorage.getItem('questionId')) || 1
-  })
- 
-async function fetchQuestion() {
-  setLoading(true)
-  setSelected(null)
-  setAnswered(false)
+  const [finished, setFinished] = useState(false)
 
-  try {
-    const res = await api.get('/questions/random')
-    setQuestion(res.data)
-  } catch {
-    setQuestion(null)
+  useEffect(() => {
+    const saved = localStorage.getItem('questionsSession')
+    if (saved) {
+      const session: SavedSession = JSON.parse(saved)
+      setQuestions(session.questions)
+      setAnswers(session.answers)
+      setCurrentIndex(session.currentIndex)
+      setFinished(session.finished)
+      const prevAnswer = session.answers[session.currentIndex]
+      if (prevAnswer) {
+        setSelected(prevAnswer)
+        setAnswered(true)
+      }
+      setLoading(false)
+    } else {
+      fetchAllQuestions()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (questions.length === TOTAL) {
+      const session: SavedSession = { questions, answers, currentIndex, finished }
+      localStorage.setItem('questionsSession', JSON.stringify(session))
+    }
+  }, [questions, answers, currentIndex, finished])
+
+  async function fetchAllQuestions() {
+    setLoading(true)
+    const fetched: Question[] = []
+    while (fetched.length < TOTAL) {
+      try {
+        const res = await api.get('/questions/random')
+        fetched.push(res.data)
+      } catch {}
+    }
+    setQuestions(fetched)
+    setLoading(false)
   }
 
-  setLoading(false)
-}
-
-function nextQuestion() {
-  setId(prev => {
-    const newId = prev + 1
-    localStorage.setItem('questionId', String(newId))
-    return newId
-  })
-  fetchQuestion()
-}
-  useEffect(() => {
-    fetchQuestion()
-  }, [])
- 
   function handleAnswer(letter: string) {
     if (answered) return
     setSelected(letter)
     setAnswered(true)
+    const newAnswers = [...answers]
+    newAnswers[currentIndex] = letter
+    setAnswers(newAnswers)
   }
- 
-  function getAltStyle(letter: string) {
-    const base: React.CSSProperties = {
-      display: 'flex',
-      alignItems: 'flex-start',
-      gap: '12px',
-      width: '100%',
-      padding: '14px 16px',
-      borderRadius: '12px',
-      border: '2px solid',
-      fontSize: '14px',
-      textAlign: 'left',
-      cursor: answered ? 'default' : 'pointer',
-      transition: 'all 0.2s',
-      background: '#1f2937',
-      borderColor: '#374151',
-      color: '#d1d5db',
+
+  function nextQuestion() {
+    if (!answered) return
+    if (currentIndex + 1 >= TOTAL) {
+      setFinished(true)
+    } else {
+      const nextIdx = currentIndex + 1
+      setCurrentIndex(nextIdx)
+      const prevAnswer = answers[nextIdx]
+      setSelected(prevAnswer)
+      setAnswered(!!prevAnswer)
     }
- 
-    if (!answered) return base
- 
-    if (letter === question?.correctAlternative) {
-      return { ...base, background: 'rgba(34,197,94,0.15)', borderColor: '#22c55e', color: '#4ade80' }
-    }
-    if (letter === selected) {
-      return { ...base, background: 'rgba(239,68,68,0.15)', borderColor: '#ef4444', color: '#f87171' }
-    }
-    return { ...base, opacity: 0.4 }
   }
- 
-  function getLetterStyle(letter: string) {
-    const base: React.CSSProperties = {
-      minWidth: '28px',
-      height: '28px',
-      borderRadius: '50%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontWeight: '700',
-      fontSize: '13px',
-      background: '#374151',
-      color: '#9ca3af',
-    }
- 
-    if (!answered) return base
- 
-    if (letter === question?.correctAlternative) {
-      return { ...base, background: '#22c55e', color: '#fff' }
-    }
-    if (letter === selected) {
-      return { ...base, background: '#ef4444', color: '#fff' }
-    }
-    return base
+
+  function restartQuiz() {
+    localStorage.removeItem('questionsSession')
+    setQuestions([])
+    setAnswers(Array(TOTAL).fill(null))
+    setCurrentIndex(0)
+    setSelected(null)
+    setAnswered(false)
+    setFinished(false)
+    fetchAllQuestions()
   }
-  
+
+  const question = questions[currentIndex]
+  const correctCount = answers.filter((a, i) => a === questions[i]?.correctAlternative).length
+  const score = Math.round((correctCount / TOTAL) * 100)
+
+  function getAltClass(letter: string) {
+    if (!answered) return 'alt-btn'
+    if (letter === question?.correctAlternative) return 'alt-btn correct'
+    if (letter === selected) return 'alt-btn wrong'
+    return 'alt-btn faded'
+  }
+
+  function getLetterClass(letter: string) {
+    if (!answered) return 'letter-circle'
+    if (letter === question?.correctAlternative) return 'letter-circle correct'
+    if (letter === selected) return 'letter-circle wrong'
+    return 'letter-circle'
+  }
+
+  if (finished) {
+    return (
+      <div className="result-page">
+        <div className="result-card">
+          <div className="trophy">{score >= 70 ? '🏆' : score >= 40 ? '📚' : '💪'}</div>
+          <h1>Resultado Final</h1>
+          <div className="score-box">
+            <p className="label">Pontuação</p>
+            <p className={`score-value ${score >= 70 ? 'high' : score >= 40 ? 'mid' : 'low'}`}>{score}</p>
+            <p className="sub">de 100 pontos</p>
+          </div>
+          <p className="result-summary">
+            Você acertou <strong>{correctCount}</strong> de <strong>{TOTAL}</strong> questões
+          </p>
+          <div className="questions-summary">
+            {questions.map((q, i) => (
+              <div key={i} className={`summary-dot ${answers[i] === q.correctAlternative ? 'correct' : 'wrong'}`}>
+                {i + 1}
+              </div>
+            ))}
+          </div>
+          <div className="result-buttons">
+            <button className="btn-restart" onClick={restartQuiz}>🔄 Novo Quiz</button>
+            <button className="btn-home" onClick={() => navigate('/home')}>🏠 Início</button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div style={{ minHeight: '100vh', background: '#030712', fontFamily: "'Segoe UI', sans-serif" }}>
-      {/* Header */}
-      <header style={{
-        background: '#111827',
-        padding: '16px 24px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
-      }}>
-        <h1 style={{ color: '#60a5fa', fontWeight: '800', fontSize: '20px', margin: 0, letterSpacing: '-0.5px' }}>
-          NextENEM
-        </h1>
-        <button
-          onClick={() => navigate('/home')}
-          style={{
-            background: '#1f2937',
-            border: 'none',
-            color: '#9ca3af',
-            padding: '6px 14px',
-            borderRadius: '20px',
-            fontSize: '13px',
-            cursor: 'pointer',
-            fontWeight: '600',
-          }}
-        >
-          ← Voltar
-        </button>
+    <div className="questions-page">
+      <header className="questions-header">
+        <h1>NextENEM</h1>
+        <button className="btn-back" onClick={() => navigate('/home')}>← Voltar</button>
       </header>
- 
-      <main style={{ maxWidth: '680px', margin: '0 auto', padding: '24px 16px 100px' }}>
+
+      <main className="questions-main">
         {loading && (
-          <p style={{ color: '#6b7280', textAlign: 'center', marginTop: '40px' }}>Carregando questão...</p>
+          <div className="loading-wrapper">
+            <p>Carregando questões...</p>
+            <p>Isso pode levar alguns segundos</p>
+          </div>
         )}
- 
-        {!loading && !question && (
-          <p style={{ color: '#f87171', textAlign: 'center', marginTop: '40px' }}>Erro ao carregar questão. Tente novamente.</p>
-        )}
- 
+
         {!loading && question && (
           <>
-            {/* Discipline badge */}
-            <div style={{
-              background: '#111827',
-              borderRadius: '16px',
-              padding: '12px 20px',
-              marginBottom: '16px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              borderLeft: '4px solid #2563eb',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
-            }}>
-              <div>
-                <p style={{ color: '#6b7280', fontSize: '12px', margin: '0 0 2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  {question.discipline}
-                </p>
-                <p style={{ color: '#d1d5db', fontSize: '13px', margin: 0, fontWeight: '600' }}>
-                  ENEM {question.year} · Questão {question.index}
-                </p>
+            <div className="progress-wrapper">
+              <div className="progress-labels">
+                <span>Questão {currentIndex + 1} de {TOTAL}</span>
+                <span>{Math.round((currentIndex / TOTAL) * 100)}%</span>
               </div>
-              <span style={{
-                background: '#1f2937',
-                color: '#60a5fa',
-                padding: '4px 12px',
-                borderRadius: '20px',
-                fontSize: '12px',
-                fontWeight: '600',
-              }}>
-                #{id}
-              </span>
+              <div className="progress-bar-bg">
+                <div className="progress-bar-fill" style={{ width: `${(currentIndex / TOTAL) * 100}%` }} />
+              </div>
             </div>
- 
-            {/* Question card */}
-            <div style={{
-              background: '#111827',
-              borderRadius: '20px',
-              padding: '24px',
-              marginBottom: '16px',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
-            }}>
-              <p style={{ color: '#d1d5db', lineHeight: '1.7', fontSize: '15px', margin: 0 }}>
-                {question.context}
-              </p>
- 
+
+            <div className="question-badge">
+              <div>
+                <p className="discipline">{question.discipline}</p>
+                <p className="year-index">ENEM {question.year} · Questão {question.index}</p>
+              </div>
+            </div>
+
+            <div className="question-card">
+              <p>{question.context}</p>
               {question.files?.map((url, i) => (
-                <img key={i} src={url} alt="imagem da questão" style={{ marginTop: '16px', borderRadius: '12px', maxWidth: '100%' }} />
+                <img key={i} src={url} alt="imagem da questão" />
               ))}
- 
               {question.alternativesIntroduction && (
-                <p style={{ color: '#9ca3af', marginTop: '16px', fontSize: '14px', marginBottom: 0 }}>
-                  {question.alternativesIntroduction}
-                </p>
+                <p className="intro">{question.alternativesIntroduction}</p>
               )}
             </div>
- 
-            {/* Alternatives */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
+
+            <div className="alternatives-list">
               {question.alternatives.map((alt) => (
-                <button
-                  key={alt.letter}
-                  onClick={() => handleAnswer(alt.letter)}
-                  style={getAltStyle(alt.letter)}
-                >
-                  <span style={getLetterStyle(alt.letter)}>{alt.letter}</span>
+                <button key={alt.letter} className={getAltClass(alt.letter)} onClick={() => handleAnswer(alt.letter)} disabled={answered}>
+                  <span className={getLetterClass(alt.letter)}>{alt.letter}</span>
                   <span style={{ paddingTop: '4px' }}>{alt.text}</span>
                 </button>
               ))}
             </div>
- 
-            {/* Feedback */}
+
             {answered && (
-              <div style={{
-                background: selected === question.correctAlternative
-                  ? 'rgba(34,197,94,0.1)'
-                  : 'rgba(239,68,68,0.1)',
-                color: selected === question.correctAlternative ? '#4ade80' : '#f87171',
-                border: `1px solid ${selected === question.correctAlternative ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
-                borderRadius: '14px',
-                padding: '14px',
-                textAlign: 'center',
-                fontWeight: '700',
-                fontSize: '15px',
-                marginBottom: '16px',
-              }}>
-                {selected === question.correctAlternative
-                  ? '✅ Resposta correta!'
-                  : `❌ Errou! A correta era ${question.correctAlternative}`}
+              <div className={`feedback ${selected === question.correctAlternative ? 'correct' : 'wrong'}`}>
+                {selected === question.correctAlternative ? '✅ Resposta correta!' : `❌ Errou! A correta era ${question.correctAlternative}`}
               </div>
             )}
- 
-            {/* Bottom buttons */}
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button
-                style={{
-                  flex: 1,
-                  padding: '15px',
-                  background: '#111827',
-                  border: '2px solid #1f2937',
-                  borderRadius: '14px',
-                  color: '#6b7280',
-                  fontWeight: '600',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                }}
-              >
-                💡 Dica
-              </button>
-              <button
-                onClick={nextQuestion}
-                style={{
-                  flex: 2,
-                  padding: '15px',
-                  background: '#2563eb',
-                  border: 'none',
-                  borderRadius: '14px',
-                  color: '#fff',
-                  fontWeight: '700',
-                  fontSize: '15px',
-                  cursor: 'pointer',
-                  boxShadow: '0 6px 20px rgba(37,99,235,0.4)',
-                }}
-              >
-                Próxima →
+
+            <div className="bottom-buttons">
+              <button className="btn-hint">💡 Dica</button>
+              <button className={`btn-next ${answered ? 'active' : 'disabled'}`} onClick={nextQuestion} disabled={!answered}>
+                {currentIndex + 1 >= TOTAL ? 'Ver Resultado 🏆' : 'Próxima →'}
               </button>
             </div>
           </>
@@ -288,4 +230,3 @@ function nextQuestion() {
     </div>
   )
 }
- 

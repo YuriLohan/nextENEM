@@ -1,0 +1,42 @@
+.verified-page {
+  min-height: 100vh;
+  background: #030712;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 24px;
+}
+
+.verified-card {
+  background: #111827;
+  border-radius: 24px;
+  padding: 40px 32px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+  text-align: center;
+}
+
+.verified-emoji {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.verified-card h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.verified-card p {
+  color: #9ca3af;
+  margin: 0 0 4px;
+}
+
+.verified-card .sub {
+  color: #6b7280;
+  font-size: 13px;
+  margin-top: 8px;
+}
