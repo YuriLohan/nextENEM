@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom' // Importado useLocation
 import api from '../services/api'
 import '../style/Questions.css'
+import ReactMarkdown from 'react-markdown'
 
 interface Alternative {
   letter: string
@@ -24,12 +25,17 @@ interface SavedSession {
   answers: (string | null)[]
   currentIndex: number
   finished: boolean
+  discipline: string // Adicionado disciplina na interface
 }
 
 const TOTAL = 10
 
 export default function Questions() {
   const navigate = useNavigate()
+  const location = useLocation() // Para pegar a disciplina do Contents.tsx
+
+  // Pega a disciplina vinda do navigate('/questions', { state: { discipline: '...' } })
+  const disciplineFromState = location.state?.discipline || ''
 
   const [questions, setQuestions] = useState<Question[]>([])
   const [answers, setAnswers] = useState<(string | null)[]>(Array(TOTAL).fill(null))
@@ -41,50 +47,75 @@ export default function Questions() {
 
   useEffect(() => {
     const saved = localStorage.getItem('questionsSession')
+    
     if (saved) {
       const session: SavedSession = JSON.parse(saved)
-      setQuestions(session.questions)
-      setAnswers(session.answers)
-      setCurrentIndex(session.currentIndex)
-      setFinished(session.finished)
-      const prevAnswer = session.answers[session.currentIndex]
-      if (prevAnswer) {
-        setSelected(prevAnswer)
-        setAnswered(true)
+      
+      // LOGICA CRITICAL: Só restaura se a disciplina for a MESMA.
+      // Se eu estava no aleatório e cliquei em "Matemática", ele ignora o cache e carrega novo.
+      if (session.discipline === disciplineFromState) {
+        setQuestions(session.questions)
+        setAnswers(session.answers)
+        setCurrentIndex(session.currentIndex)
+        setFinished(session.finished)
+        const prevAnswer = session.answers[session.currentIndex]
+        if (prevAnswer) {
+          setSelected(prevAnswer)
+          setAnswered(true)
+        }
+        setLoading(false)
+        return // Para aqui, não executa o fetchAllQuestions
       }
-      setLoading(false)
-    } else {
-      fetchAllQuestions()
     }
-  }, [])
+    
+    // Se não tem cache ou a disciplina é diferente, busca novas
+    fetchAllQuestions(disciplineFromState)
+  }, [disciplineFromState]) // Recarrega se a disciplina mudar
 
   useEffect(() => {
     if (questions.length === TOTAL) {
-      const session: SavedSession = { questions, answers, currentIndex, finished }
+      const session: SavedSession = { 
+        questions, 
+        answers, 
+        currentIndex, 
+        finished,
+        discipline: disciplineFromState // Salva qual disciplina é essa sessão
+      }
       localStorage.setItem('questionsSession', JSON.stringify(session))
     }
-  }, [questions, answers, currentIndex, finished])
+  }, [questions, answers, currentIndex, finished, disciplineFromState])
 
-  async function fetchAllQuestions() {
-    setLoading(true)
-    const fetched: Question[] = []
-    while (fetched.length < TOTAL) {
-      try {
-        const res = await api.get('/questions/random')
-        fetched.push(res.data)
-      } catch {}
+  async function fetchAllQuestions(disc: string) {
+  setLoading(true);
+  const fetched: Question[] = [];
+  
+  try {
+    // Busca 10 questões (ou faça um loop de 10 chamadas)
+    for (let i = 0; i < TOTAL; i++) {
+      const res = await api.get('/questions/random', {
+        params: disc ? { discipline: disc } : {}
+      });
+      fetched.push(res.data);
     }
-    setQuestions(fetched)
-    setLoading(false)
+    setQuestions(fetched);
+  } catch (err) {
+    console.error("Erro ao carregar simulado:", err);
+    // Se falhar, você pode decidir se limpa o loading ou mostra erro
+  } finally {
+    setLoading(false);
   }
+}
 
   function handleAnswer(letter: string) {
     if (answered) return
+    const currentQ = questions[currentIndex]
     setSelected(letter)
     setAnswered(true)
     const newAnswers = [...answers]
     newAnswers[currentIndex] = letter
     setAnswers(newAnswers)
+
+    // Opcional: Enviar resposta para o banco de dados aqui se desejar
   }
 
   function nextQuestion() {
@@ -102,16 +133,18 @@ export default function Questions() {
 
   function restartQuiz() {
     localStorage.removeItem('questionsSession')
-    setQuestions([])
-    setAnswers(Array(TOTAL).fill(null))
-    setCurrentIndex(0)
-    setSelected(null)
-    setAnswered(false)
-    setFinished(false)
-    fetchAllQuestions()
+    fetchAllQuestions(disciplineFromState)
   }
 
   const question = questions[currentIndex]
+  const cleanContext = question?.context
+  ? question.context
+      .replace(/!\[.*?\]\(.*?\)/g, '')
+      .replace(/\(https?:\/\/\S+\)/g, '')
+      .replace(/https?:\/\/\S+/g, '')
+      .trim()
+  : '';
+
   const correctCount = answers.filter((a, i) => a === questions[i]?.correctAlternative).length
   const score = Math.round((correctCount / TOTAL) * 100)
 
@@ -134,14 +167,15 @@ export default function Questions() {
       <div className="result-page">
         <div className="result-card">
           <div className="trophy">{score >= 70 ? '🏆' : score >= 40 ? '📚' : '💪'}</div>
-          <h1>Resultado Final</h1>
+          <h1>{disciplineFromState ? `Fim de Estudo` : 'Simulado Finalizado'}</h1>
           <div className="score-box">
             <p className="label">Pontuação</p>
             <p className={`score-value ${score >= 70 ? 'high' : score >= 40 ? 'mid' : 'low'}`}>{score}</p>
             <p className="sub">de 100 pontos</p>
           </div>
           <p className="result-summary">
-            Você acertou <strong>{correctCount}</strong> de <strong>{TOTAL}</strong> questões
+            Área: <strong>{disciplineFromState || 'Misturado'}</strong><br/>
+            Acertou <strong>{correctCount}</strong> de <strong>{TOTAL}</strong> questões
           </p>
           <div className="questions-summary">
             {questions.map((q, i) => (
@@ -162,19 +196,17 @@ export default function Questions() {
   return (
     <div className="questions-page">
       <header className="questions-header">
-        <h1>NextENEM</h1>
+        <h1>NextENEM · {disciplineFromState || 'Geral'}</h1>
         <button className="btn-back" onClick={() => navigate('/home')}>← Voltar</button>
       </header>
 
       <main className="questions-main">
-        {loading && (
+        {loading ? (
           <div className="loading-wrapper">
-            <p>Carregando questões...</p>
-            <p>Isso pode levar alguns segundos</p>
+            <p>Buscando questões de {disciplineFromState || 'todas as áreas'}...</p>
+            <p>Preparando seu material...</p>
           </div>
-        )}
-
-        {!loading && question && (
+        ) : questions.length > 0 ? (
           <>
             <div className="progress-wrapper">
               <div className="progress-labels">
@@ -194,12 +226,20 @@ export default function Questions() {
             </div>
 
             <div className="question-card">
-              <p>{question.context}</p>
               {question.files?.map((url, i) => (
                 <img key={i} src={url} alt="imagem da questão" />
               ))}
+
+              {cleanContext && (
+                <div style={{ marginTop: '16px' }}>
+                  <ReactMarkdown>{cleanContext}</ReactMarkdown>
+                </div>
+              )}
+
               {question.alternativesIntroduction && (
-                <p className="intro">{question.alternativesIntroduction}</p>
+                <div className="intro">
+                  <ReactMarkdown>{question.alternativesIntroduction}</ReactMarkdown>
+                </div>
               )}
             </div>
 
@@ -219,14 +259,19 @@ export default function Questions() {
             )}
 
             <div className="bottom-buttons">
-              <button className="btn-hint">💡 Dica</button>
+              <button className="btn-hint" onClick={() => alert("Dica: Foque no comando da questão.")}>💡 Dica</button>
               <button className={`btn-next ${answered ? 'active' : 'disabled'}`} onClick={nextQuestion} disabled={!answered}>
                 {currentIndex + 1 >= TOTAL ? 'Ver Resultado 🏆' : 'Próxima →'}
               </button>
             </div>
           </>
+        ) : (
+          <div className="error-wrapper">
+            <p>Não encontramos questões para esta área no momento.</p>
+            <button onClick={() => navigate('/home')}>Voltar</button>
+          </div>
         )}
       </main>
     </div>
   )
-}
+} 

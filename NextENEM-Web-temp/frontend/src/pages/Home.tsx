@@ -59,15 +59,15 @@ export default function Home() {
         </div>
 
         <div className="home-grid">
-          <div className="home-soon-card">
+          <div className="home-soon-card home-soon-card--active" onClick={() => navigate('/conteudos')}>
             <p className="home-soon-emoji">📚</p>
             <p className="home-soon-title">Conteúdos</p>
-            <p className="home-soon-label">Em breve</p>
+            <p className="home-soon-label">Estudar por área</p>
           </div>
-          <div className="home-soon-card">
+          <div className="home-soon-card home-soon-card--active" onClick={() => navigate('/performance')}>
             <p className="home-soon-emoji">📊</p>
             <p className="home-soon-title">Desempenho</p>
-            <p className="home-soon-label">Em breve</p>
+            <p className="home-soon-label">Ver meu progresso →</p>
           </div>
         </div>
       </main>
