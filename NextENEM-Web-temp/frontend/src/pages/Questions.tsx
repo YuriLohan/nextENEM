@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import '../style/Questions.css'
+import ReactMarkdown from 'react-markdown'
 
 interface Alternative {
   letter: string
@@ -112,8 +113,16 @@ export default function Questions() {
   }
 
   const question = questions[currentIndex]
+  const cleanContext = question?.context
+  ? question.context
+      .replace(/!\[.*?\]\(.*?\)/g, '') // Remove ![texto](link)
+      .replace(/\(https?:\/\/\S+\)/g, '') // Remove (http...)
+      .replace(/https?:\/\/\S+/g, '') // Remove http... solto
+      .trim()
+  : '';
   const correctCount = answers.filter((a, i) => a === questions[i]?.correctAlternative).length
   const score = Math.round((correctCount / TOTAL) * 100)
+  
 
   function getAltClass(letter: string) {
     if (!answered) return 'alt-btn'
@@ -194,12 +203,23 @@ export default function Questions() {
             </div>
 
             <div className="question-card">
-              <p>{question.context}</p>
+              {/* 1. Imagens primeiro */}
               {question.files?.map((url, i) => (
                 <img key={i} src={url} alt="imagem da questão" />
               ))}
+
+              {/* 2. Contexto usando ReactMarkdown para limpar os asteriscos */}
+              {cleanContext && (
+                <div style={{ marginTop: '16px' }}>
+                  <ReactMarkdown>{cleanContext}</ReactMarkdown>
+                </div>
+              )}
+
+              {/* 3. Introdução das alternativas também com Markdown */}
               {question.alternativesIntroduction && (
-                <p className="intro">{question.alternativesIntroduction}</p>
+                <div className="intro">
+                  <ReactMarkdown>{question.alternativesIntroduction}</ReactMarkdown>
+                </div>
               )}
             </div>
 
