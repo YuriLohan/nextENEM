@@ -1,35 +1,23 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import api from '../services/api'
 import '../style/Questions.css'
 
-interface Alternative {
-  letter: string
-  text: string
-}
-
+interface Alternative { letter: string; text: string }
 interface Question {
-  index: number
-  year: number
-  discipline: string
-  context: string
-  files: string[]
-  alternativesIntroduction: string
-  alternatives: Alternative[]
-  correctAlternative: string
-}
-
-interface SavedSession {
-  questions: Question[]
-  answers: (string | null)[]
-  currentIndex: number
-  finished: boolean
+  index: number; year: number; discipline: string; context: string;
+  files: string[]; alternativesIntroduction: string; 
+  alternatives: Alternative[]; correctAlternative: string;
 }
 
 const TOTAL = 10
 
 export default function Questions() {
   const navigate = useNavigate()
+  const location = useLocation()
+
+  // Verifica se o usuário veio do "Conteúdos" selecionando uma área específica
+  const selectedDiscipline = location.state?.discipline || ''
 
   const [questions, setQuestions] = useState<Question[]>([])
   const [answers, setAnswers] = useState<(string | null)[]>(Array(TOTAL).fill(null))
@@ -39,52 +27,79 @@ export default function Questions() {
   const [loading, setLoading] = useState(true)
   const [finished, setFinished] = useState(false)
 
+  // Carregamento inicial
   useEffect(() => {
     const saved = localStorage.getItem('questionsSession')
+    
     if (saved) {
-      const session: SavedSession = JSON.parse(saved)
-      setQuestions(session.questions)
-      setAnswers(session.answers)
-      setCurrentIndex(session.currentIndex)
-      setFinished(session.finished)
-      const prevAnswer = session.answers[session.currentIndex]
-      if (prevAnswer) {
-        setSelected(prevAnswer)
-        setAnswered(true)
+      const session = JSON.parse(saved)
+      // Só restaura a sessão se a disciplina salva for a mesma da rota atual
+      if (session.discipline === selectedDiscipline) {
+        setQuestions(session.questions)
+        setAnswers(session.answers)
+        setCurrentIndex(session.currentIndex)
+        setFinished(session.finished)
+        const prevAnswer = session.answers[session.currentIndex]
+        if (prevAnswer) { setSelected(prevAnswer); setAnswered(true); }
+        setLoading(false)
+        return
       }
-      setLoading(false)
-    } else {
-      fetchAllQuestions()
     }
-  }, [])
+    
+    // Se não houver sessão ou for uma área diferente, busca novas questões
+    fetchQuestions(selectedDiscipline)
+  }, [selectedDiscipline])
 
+  // Salva progresso no LocalStorage
   useEffect(() => {
     if (questions.length === TOTAL) {
-      const session: SavedSession = { questions, answers, currentIndex, finished }
+      const session = { 
+        questions, 
+        answers, 
+        currentIndex, 
+        finished, 
+        discipline: selectedDiscipline 
+      }
       localStorage.setItem('questionsSession', JSON.stringify(session))
     }
-  }, [questions, answers, currentIndex, finished])
+  }, [questions, answers, currentIndex, finished, selectedDiscipline])
 
-  async function fetchAllQuestions() {
+  async function fetchQuestions(discipline: string) {
     setLoading(true)
     const fetched: Question[] = []
+    // Define a URL baseada na disciplina (se vazia, o backend manda aleatório)
+    const url = discipline ? `/questions/random?discipline=${discipline}` : '/questions/random'
+    
     while (fetched.length < TOTAL) {
       try {
-        const res = await api.get('/questions/random')
+        const res = await api.get(url)
         fetched.push(res.data)
-      } catch {}
+      } catch { break }
     }
     setQuestions(fetched)
     setLoading(false)
   }
 
-  function handleAnswer(letter: string) {
+  async function handleAnswer(letter: string) {
     if (answered) return
+    const question = questions[currentIndex]
     setSelected(letter)
     setAnswered(true)
+
     const newAnswers = [...answers]
     newAnswers[currentIndex] = letter
     setAnswers(newAnswers)
+
+    try {
+      await api.post('/questions/answer', {
+        question_index: question.index,
+        year: question.year,
+        discipline: question.discipline,
+        selected: letter,
+        correct: question.correctAlternative,
+        is_correct: letter === question.correctAlternative,
+      })
+    } catch {}
   }
 
   function nextQuestion() {
@@ -95,63 +110,45 @@ export default function Questions() {
       const nextIdx = currentIndex + 1
       setCurrentIndex(nextIdx)
       const prevAnswer = answers[nextIdx]
-      setSelected(prevAnswer)
+      setSelected(prevAnswer || null)
       setAnswered(!!prevAnswer)
     }
   }
 
   function restartQuiz() {
     localStorage.removeItem('questionsSession')
-    setQuestions([])
     setAnswers(Array(TOTAL).fill(null))
     setCurrentIndex(0)
     setSelected(null)
     setAnswered(false)
     setFinished(false)
-    fetchAllQuestions()
+    fetchQuestions(selectedDiscipline)
   }
 
   const question = questions[currentIndex]
   const correctCount = answers.filter((a, i) => a === questions[i]?.correctAlternative).length
   const score = Math.round((correctCount / TOTAL) * 100)
 
-  function getAltClass(letter: string) {
-    if (!answered) return 'alt-btn'
-    if (letter === question?.correctAlternative) return 'alt-btn correct'
-    if (letter === selected) return 'alt-btn wrong'
-    return 'alt-btn faded'
-  }
-
-  function getLetterClass(letter: string) {
-    if (!answered) return 'letter-circle'
-    if (letter === question?.correctAlternative) return 'letter-circle correct'
-    if (letter === selected) return 'letter-circle wrong'
-    return 'letter-circle'
-  }
+  const getAltClass = (l: string) => !answered ? 'alt-btn' : l === question?.correctAlternative ? 'alt-btn correct' : l === selected ? 'alt-btn wrong' : 'alt-btn faded'
+  const getLetterClass = (l: string) => !answered ? 'letter-circle' : l === question?.correctAlternative ? 'letter-circle correct' : l === selected ? 'letter-circle wrong' : 'letter-circle'
 
   if (finished) {
     return (
       <div className="result-page">
         <div className="result-card">
           <div className="trophy">{score >= 70 ? '🏆' : score >= 40 ? '📚' : '💪'}</div>
-          <h1>Resultado Final</h1>
+          <h1>{selectedDiscipline ? `Fim de: ${question?.discipline}` : 'Simulado Finalizado'}</h1>
           <div className="score-box">
             <p className="label">Pontuação</p>
             <p className={`score-value ${score >= 70 ? 'high' : score >= 40 ? 'mid' : 'low'}`}>{score}</p>
-            <p className="sub">de 100 pontos</p>
           </div>
-          <p className="result-summary">
-            Você acertou <strong>{correctCount}</strong> de <strong>{TOTAL}</strong> questões
-          </p>
           <div className="questions-summary">
             {questions.map((q, i) => (
-              <div key={i} className={`summary-dot ${answers[i] === q.correctAlternative ? 'correct' : 'wrong'}`}>
-                {i + 1}
-              </div>
+              <div key={i} className={`summary-dot ${answers[i] === q.correctAlternative ? 'correct' : 'wrong'}`}>{i + 1}</div>
             ))}
           </div>
           <div className="result-buttons">
-            <button className="btn-restart" onClick={restartQuiz}>🔄 Novo Quiz</button>
+            <button className="btn-restart" onClick={restartQuiz}>🔄 Refazer</button>
             <button className="btn-home" onClick={() => navigate('/home')}>🏠 Início</button>
           </div>
         </div>
@@ -162,19 +159,16 @@ export default function Questions() {
   return (
     <div className="questions-page">
       <header className="questions-header">
-        <h1>NextENEM</h1>
-        <button className="btn-back" onClick={() => navigate('/home')}>← Voltar</button>
+        <h1>NextENEM · {selectedDiscipline ? 'Estudo focado' : 'Praticar'}</h1>
+        <button className="btn-back" onClick={() => navigate('/home')}>← Sair</button>
       </header>
 
       <main className="questions-main">
-        {loading && (
+        {loading ? (
           <div className="loading-wrapper">
-            <p>Carregando questões...</p>
-            <p>Isso pode levar alguns segundos</p>
+            <p>Buscando questões de {selectedDiscipline || 'todas as áreas'}...</p>
           </div>
-        )}
-
-        {!loading && question && (
+        ) : (
           <>
             <div className="progress-wrapper">
               <div className="progress-labels">
@@ -195,12 +189,8 @@ export default function Questions() {
 
             <div className="question-card">
               <p>{question.context}</p>
-              {question.files?.map((url, i) => (
-                <img key={i} src={url} alt="imagem da questão" />
-              ))}
-              {question.alternativesIntroduction && (
-                <p className="intro">{question.alternativesIntroduction}</p>
-              )}
+              {question.files?.map((url, i) => <img key={i} src={url} alt="imagem" />)}
+              {question.alternativesIntroduction && <p className="intro">{question.alternativesIntroduction}</p>}
             </div>
 
             <div className="alternatives-list">
@@ -214,12 +204,12 @@ export default function Questions() {
 
             {answered && (
               <div className={`feedback ${selected === question.correctAlternative ? 'correct' : 'wrong'}`}>
-                {selected === question.correctAlternative ? '✅ Resposta correta!' : `❌ Errou! A correta era ${question.correctAlternative}`}
+                {selected === question.correctAlternative ? '✅ Excelente!' : `❌ A correta é a letra ${question.correctAlternative}`}
               </div>
             )}
 
             <div className="bottom-buttons">
-              <button className="btn-hint">💡 Dica</button>
+              <button className="btn-hint" onClick={() => alert("Dica: Foque nas palavras-chave do enunciado.")}>💡 Dica</button>
               <button className={`btn-next ${answered ? 'active' : 'disabled'}`} onClick={nextQuestion} disabled={!answered}>
                 {currentIndex + 1 >= TOTAL ? 'Ver Resultado 🏆' : 'Próxima →'}
               </button>

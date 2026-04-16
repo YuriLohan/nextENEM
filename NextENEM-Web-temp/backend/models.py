@@ -1,12 +1,11 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from database import Base
 
 
 # ─────────────────────────────────────────
 # Model — User
-# Representa a tabela "users" no banco.
-# Armazena dados de autenticação e controle
-# de verificação de email por token UUID
 # ─────────────────────────────────────────
 class User(Base):
     __tablename__ = "users"
@@ -18,3 +17,28 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
     verification_token = Column(String(255), nullable=True, unique=True)
+
+    answers = relationship("Answer", back_populates="user")
+
+
+# ─────────────────────────────────────────
+# Model — Answer
+# Registra cada resposta do usuário
+# ─────────────────────────────────────────
+class Answer(Base):
+    __tablename__ = "answers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    question_index = Column(Integer, nullable=False)
+    year = Column(Integer, nullable=False)
+    discipline = Column(String(255), nullable=False)
+
+    selected = Column(String(1), nullable=False)
+    correct = Column(String(1), nullable=False)
+    is_correct = Column(Boolean, nullable=False)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="answers")
