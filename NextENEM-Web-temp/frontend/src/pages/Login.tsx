@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import api from '../services/api'
 import '../style/shared.css'
 import '../style/Login.css'
+import logo from '../assets/logo.png' // A importação já estava correta
 
 export default function Login() {
   const navigate = useNavigate()
@@ -26,13 +27,8 @@ export default function Login() {
     <div className="page">
       <div className="card">
         <div className="logo-wrapper">
-          <div className="logo-circle">
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-              <circle cx="18" cy="14" r="7" stroke="white" strokeWidth="2.5" fill="none"/>
-              <path d="M10 28c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-            </svg>
-          </div>
-          <h1 className="logo-title">NextENEM</h1>
+          {/* Substituímos o círculo e o h1 pela tag img com a classe logo-img */}
+          <img src={logo} alt="NextENEM" className="logo-img" />
           <p className="logo-subtitle">Entre na sua conta para continuar aprendendo</p>
         </div>
 
@@ -47,6 +43,7 @@ export default function Login() {
           <input className="input-field" type="email" placeholder="email@dominio.com" value={email} onChange={e => setEmail(e.target.value)} />
         </div>
 
+        {/* Removido o style inline e você pode usar uma classe se quiser, mas mantive a estrutura limpa */}
         <div className="input-wrapper" style={{ marginBottom: '24px' }}>
           <span className="input-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

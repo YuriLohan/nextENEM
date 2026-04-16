@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import api from '../services/api'
 import '../style/shared.css'
 import '../style/Register.css'
+import logo from '../assets/logo.png'
 
 export default function Register() {
   const [name, setName] = useState('')
@@ -28,8 +29,8 @@ export default function Register() {
       await api.post('/auth/register', { name, email, password })
       setSuccess('Cadastro realizado! Verifique seu email para ativar a conta.')
       setRegistered(true)
-    } catch (error: any) {
-      const msg = error.response?.data?.detail || 'Erro ao cadastrar. Tente outro email.'
+    }catch (err: any) { // Adicione o ": any" aqui para silenciar o erro de tipagem
+      const msg = err.response?.data?.detail || 'Erro ao cadastrar. Tente outro email.'
       setError(msg)
     }
   }
@@ -38,19 +39,15 @@ export default function Register() {
     <div className="page">
       <div className="card">
         <div className="logo-wrapper">
-          <div className="logo-circle">
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-              <circle cx="18" cy="14" r="7" stroke="white" strokeWidth="2.5" fill="none"/>
-              <path d="M10 28c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-              <path d="M22 11l2 2-2 2" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-          <h1 className="logo-title">NextENEM</h1>
-          <p className="logo-subtitle">{registered ? 'Verifique seu email' : 'Crie sua conta gratuitamente'}</p>
+          {/* Classe adicionada e style inline removido */}
+          <img src={logo} alt="NextENEM" className="logo-img" />
+          <p className="logo-subtitle">
+            {registered ? 'Verifique seu email' : 'Crie sua conta gratuitamente'}
+          </p>
         </div>
 
         {error && !registered && <div className="alert alert-error">{error}</div>}
-
+        
         {registered ? (
           <>
             <div className="alert alert-success">{success}</div>
@@ -92,8 +89,7 @@ export default function Register() {
         )}
 
         <p className="page-footer">
-          Já tem conta?{' '}
-          <Link to="/">Entrar</Link>
+          Já tem conta? <Link to="/">Entrar</Link>
         </p>
       </div>
     </div>
