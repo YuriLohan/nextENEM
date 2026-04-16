@@ -6,6 +6,7 @@ from models import Answer
 from routes.auth import get_current_user
 import httpx
 import random
+import unicodedata
 
 router = APIRouter()
 
@@ -27,33 +28,58 @@ def get_disciplines():
         {"value": "ciencias-da-natureza", "label": "Ciências da Natureza"},
     ]
 
+def remove_accents(input_str):
+    if not input_str: return ""
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
-# ─────────────────────────────────────────
-# Rota — GET /random
-# Questão aleatória com filtro opcional
-# ─────────────────────────────────────────
 @router.get("/random")
 async def get_random_question(discipline: str = None):
-    year = random.choice(AVAILABLE_YEARS)
+    # Vamos tentar no máximo em 3 anos diferentes para não travar o servidor
+    attempts = 0
+    max_attempts = 3
+    
+    # Copia a lista de anos para sortear sem repetir
+    years_to_try = AVAILABLE_YEARS.copy()
+    random.shuffle(years_to_try)
 
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            url = f"{ENEM_API_BASE}/exams/{year}/questions"
-            if discipline:
-                url += f"?discipline={discipline}"
+    while attempts < max_attempts and years_to_try:
+        year = years_to_try.pop()
+        attempts += 1
+        
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client: # Aumentei para 15s
+                url = f"{ENEM_API_BASE}/exams/{year}/questions"
+                res = await client.get(url)
+                
+                if res.status_code != 200:
+                    continue # Tenta o próximo ano se este der erro na API externa
+                
+                data = res.json()
+                questions = data.get("questions", data) if isinstance(data, dict) else data
 
-            res = await client.get(url)
-            res.raise_for_status()
-            data = res.json()
-            questions = data.get("questions", data) if isinstance(data, dict) else data
+                if discipline:
+                    search_term = remove_accents(discipline.lower())
+                    filtered = [
+                        q for q in questions 
+                        if search_term in remove_accents(q.get("discipline", "").lower())
+                    ]
+                    
+                    if filtered:
+                        return random.choice(filtered)
+                    # Se não achou a disciplina neste ano, o loop continua para o próximo attempt
+                else:
+                    return random.choice(questions)
 
-            if not questions:
-                raise HTTPException(status_code=404, detail="Nenhuma questão encontrada")
+        except (httpx.HTTPError, Exception) as e:
+            print(f"Erro ao acessar ano {year}: {e}")
+            continue # Tenta o próximo ano
 
-            return random.choice(questions)
-
-    except httpx.HTTPError as e:
-        raise HTTPException(status_code=502, detail=f"Erro ao buscar questão: {str(e)}")
+    # Se sair do loop sem retornar, é porque realmente não achou
+    raise HTTPException(
+        status_code=404, 
+        detail=f"Não encontramos questões de '{discipline}' após várias tentativas."
+    )
 
 
 # ─────────────────────────────────────────

@@ -11,9 +11,9 @@ const DISCIPLINES = [
 export default function Contents() {
   const navigate = useNavigate()
 
-  const handleSelect = (discipline: string) => {
+  const handleSelect = (disciplineValue: string) => {
     // Mandamos para a rota de questões passando a disciplina no estado da navegação
-    navigate('/questions', { state: { discipline } })
+    navigate('/questions', { state: { discipline: disciplineValue } })
   }
 
   return (
