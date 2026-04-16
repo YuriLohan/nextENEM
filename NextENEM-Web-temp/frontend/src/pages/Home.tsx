@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import '../style/Home.css'
 
+
 export default function Home() {
   const navigate = useNavigate()
   const name = localStorage.getItem('name') || 'Estudante'
