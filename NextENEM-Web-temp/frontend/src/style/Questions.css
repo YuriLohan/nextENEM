@@ -143,10 +143,10 @@
   max-width: 100%;
 }
 
-.question-card .intro {
+.question-card .intro p{
   color: #ffffff;
   margin-top: 16px;
-  font-size: 14px;
+  font-size: 15 px;
   margin-bottom: 0;
 }
 
