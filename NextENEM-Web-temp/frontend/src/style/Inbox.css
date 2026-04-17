@@ -1,3 +1,4 @@
+@layer components {
 .inbox-emoji {
   font-size: 52px;
   margin-bottom: 8px;
@@ -66,4 +67,5 @@
   margin-top: 20px;
   font-size: 13px;
   cursor: pointer;
+}
 }

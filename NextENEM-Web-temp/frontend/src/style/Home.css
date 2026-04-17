@@ -1,3 +1,4 @@
+@layer components {
 .home-page {
   min-height: 100vh;
   background: #030712;
@@ -157,4 +158,5 @@
   color: #4b5563;
   font-size: 12px;
   margin: 0;
+}
 }

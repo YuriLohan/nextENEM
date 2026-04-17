@@ -6,6 +6,8 @@ import Home from './pages/Home'
 import Questions from './pages/Questions'
 import Performance from './pages/Performance'
 import Contents from './pages/Contents'
+import Inbox from './pages/Inbox'
+import Verified from './pages/Verified'
 
 function PrivateRoute({ children }: { children: React.ReactElement }) {
   const token = localStorage.getItem('token')
@@ -17,6 +19,8 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/inbox" element={<Inbox />} />
+      <Route path="/verified" element={<Verified />} />
       <Route path="/conteudos" element={<Contents />} />
       <Route path="/home" element={
         <PrivateRoute><Home /></PrivateRoute>

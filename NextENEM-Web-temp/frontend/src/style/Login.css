@@ -1,3 +1,4 @@
+@layer components {
 .login-google-btn {
   width: 100%;
   padding: 14px;
@@ -20,4 +21,5 @@
   font-size: 13px;
   color: #6b7280;
   margin: 0 0 8px;
+}
 }

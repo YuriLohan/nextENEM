@@ -1,3 +1,4 @@
+@layer components {
 .verified-page {
   min-height: 100vh;
   background: #030712;
@@ -39,4 +40,5 @@
   color: #6b7280;
   font-size: 13px;
   margin-top: 8px;
+}
 }
