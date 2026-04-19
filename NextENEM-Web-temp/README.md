@@ -65,6 +65,8 @@ CREATE TABLE users (
 );
 DESCRIBE users;
 SELECT * FROM users;
+
+ALTER TABLE users ADD COLUMN study_area VARCHAR(100) DEFAULT NULL;
 ```
  
 2. Certifique-se que o usuário `root` sem senha tem acesso, ou ajuste o `.env`.
