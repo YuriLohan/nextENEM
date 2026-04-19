@@ -31,12 +31,11 @@
 }
 
 .logo-img {
-  width: 240px; 
+  width: 180px;
   height: auto;
   display: block;
   object-fit: contain;
-  /* Remove o excesso de topo da imagem */
-  margin-top: -45px; 
+  margin-bottom: 8px;
 }
 
 .logo-subtitle {
@@ -44,10 +43,6 @@
   font-size: 14px;
   margin: 0;
   padding: 0;
-  /* FORÇA O TEXTO A SUBIR PARA PERTO DO DESENHO */
-  margin-top: -55px; 
-  position: relative; 
-  z-index: 2; 
 }
 
 /* Inputs com ícone */

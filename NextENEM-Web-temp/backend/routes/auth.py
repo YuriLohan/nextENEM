@@ -37,6 +37,8 @@ class LoginSchema(BaseModel):
     email: str
     password: str
 
+class StudyAreaSchema(BaseModel):
+    study_area: str
 
 def hash_password(password: str):
     return pwd_context.hash(password)
@@ -130,8 +132,18 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
         )
 
     token = create_token({"sub": user.email, "name": user.name})
-    return {"access_token": token, "token_type": "bearer", "name": user.name}
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "name": user.name,
+        "study_area": user.study_area  # ✅ novo
+    }
 
+@router.post("/study-area")
+def save_study_area(data: StudyAreaSchema, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    current_user.study_area = data.study_area
+    db.commit()
+    return {"message": "Área salva com sucesso"}
 
 @router.get("/verify-email")
 def verify_email(token: str = Query(...), db: Session = Depends(get_db)):

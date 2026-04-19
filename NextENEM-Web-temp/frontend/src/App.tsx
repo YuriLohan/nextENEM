@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import React from 'react'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import AreaSelect from './pages/AreaSelect'
 import Home from './pages/Home'
 import Questions from './pages/Questions'
 import Performance from './pages/Performance'
@@ -19,6 +20,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/area-select" element={<AreaSelect />} />
       <Route path="/inbox" element={<Inbox />} />
       <Route path="/verified" element={<Verified />} />
       <Route path="/conteudos" element={<Contents />} />

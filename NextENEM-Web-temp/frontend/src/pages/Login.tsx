@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import api from '../services/api'
 import '../style/shared.css'
 import '../style/Login.css'
-import logo from '../assets/logo.png' // A importação já estava correta
+import logo from '../assets/logo.png'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -16,7 +16,8 @@ export default function Login() {
       const res = await api.post('/auth/login', { email, password })
       localStorage.setItem('token', res.data.access_token)
       localStorage.setItem('name', res.data.name)
-      navigate('/home')
+      const hasArea = res.data.study_area
+      navigate(hasArea ? '/home' : '/area-select')
     } catch (error: any) {
       const msg = error.response?.data?.detail || 'Email ou senha inválidos'
       setError(msg)
@@ -27,7 +28,6 @@ export default function Login() {
     <div className="page">
       <div className="card">
         <div className="logo-wrapper">
-          {/* Substituímos o círculo e o h1 pela tag img com a classe logo-img */}
           <img src={logo} alt="NextENEM" className="logo-img" />
           <p className="logo-subtitle">Entre na sua conta para continuar aprendendo</p>
         </div>
@@ -43,8 +43,7 @@ export default function Login() {
           <input className="input-field" type="email" placeholder="email@dominio.com" value={email} onChange={e => setEmail(e.target.value)} />
         </div>
 
-        {/* Removido o style inline e você pode usar uma classe se quiser, mas mantive a estrutura limpa */}
-        <div className="input-wrapper" style={{ marginBottom: '24px' }}>
+        <div className="input-wrapper login-password">
           <span className="input-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>

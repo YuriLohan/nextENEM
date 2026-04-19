@@ -1,18 +1,31 @@
 import { useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import '../style/Home.css'
-
 
 export default function Home() {
   const navigate = useNavigate()
   const name = localStorage.getItem('name') || 'Estudante'
+  const initials = name.slice(0, 2).toUpperCase()
   const [quote, setQuote] = useState<{ text: string; author: string } | null>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
 
   function handleLogout() {
     localStorage.removeItem('token')
     localStorage.removeItem('name')
     navigate('/')
   }
+
+  // Fecha o menu ao clicar fora
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   useEffect(() => {
     const frases = [
@@ -34,7 +47,30 @@ export default function Home() {
           <div className="home-header-logo-circle">NE</div>
           <span className="home-header-logo-name">NextENEM</span>
         </div>
-        <button className="home-btn-logout" onClick={handleLogout}>Sair</button>
+
+        {/* Avatar com dropdown */}
+        <div className="home-avatar-wrapper" ref={menuRef}>
+          <button
+            className="home-avatar-btn"
+            onClick={() => setMenuOpen(prev => !prev)}
+          >
+            {initials}
+          </button>
+
+          {menuOpen && (
+            <div className="home-dropdown">
+              <div className="home-dropdown-header">
+                <p className="home-dropdown-name">{name}</p>
+              </div>
+              <button className="home-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/area-select') }}>
+                🎯 Mudar área de estudo
+              </button>
+              <button className="home-dropdown-item danger" onClick={handleLogout}>
+                🚪 Sair
+              </button>
+            </div>
+          )}
+        </div>
       </header>
 
       <main className="home-main">
