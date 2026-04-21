@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import '../style/AreaSelect.css'
 import api from '../services/api'
 
-
 const areas = [
   { id: 'medicina', label: 'Medicina', emoji: '🩺' },
   { id: 'direito', label: 'Direito', emoji: '⚖️' },
@@ -15,15 +14,24 @@ export default function AreaSelect() {
   const navigate = useNavigate()
   const [selected, setSelected] = useState<string | null>(null)
 
-    async function handleConfirm() {
+  function handleCardClick(id: string) {
+    if (id === 'outros') {
+      navigate('/area-outros')
+    } else {
+      setSelected(id)
+    }
+  }
+
+  async function handleConfirm() {
     if (!selected) return
     try {
-        await api.post('/auth/study-area', { study_area: selected })
-        navigate('/home')
+      await api.post('/auth/study-area', { study_area: selected })
+      navigate('/home')
     } catch {
-        navigate('/home')
+      navigate('/home')
     }
-    }
+  }
+
   return (
     <div className="area-page">
       <div className="area-header">
@@ -44,7 +52,7 @@ export default function AreaSelect() {
           <button
             key={area.id}
             className={`area-card ${selected === area.id ? 'selected' : ''}`}
-            onClick={() => setSelected(area.id)}
+            onClick={() => handleCardClick(area.id)}
           >
             <span className="area-emoji">{area.emoji}</span>
             <span className="area-label">{area.label}</span>

@@ -16,7 +16,6 @@ export default function Home() {
     navigate('/')
   }
 
-  // Fecha o menu ao clicar fora
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -48,12 +47,8 @@ export default function Home() {
           <span className="home-header-logo-name">NextENEM</span>
         </div>
 
-        {/* Avatar com dropdown */}
         <div className="home-avatar-wrapper" ref={menuRef}>
-          <button
-            className="home-avatar-btn"
-            onClick={() => setMenuOpen(prev => !prev)}
-          >
+          <button className="home-avatar-btn" onClick={() => setMenuOpen(prev => !prev)}>
             {initials}
           </button>
 
@@ -104,6 +99,11 @@ export default function Home() {
             <p className="home-soon-emoji">📊</p>
             <p className="home-soon-title">Desempenho</p>
             <p className="home-soon-label">Ver meu progresso →</p>
+          </div>
+          <div className="home-soon-card home-soon-card--active" onClick={() => navigate('/universidades')}>
+            <p className="home-soon-emoji">🎓</p>
+            <p className="home-soon-title">Universidades</p>
+            <p className="home-soon-label">Encontre faculdades na sua cidade</p>
           </div>
         </div>
       </main>
