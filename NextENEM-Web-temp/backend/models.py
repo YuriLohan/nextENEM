@@ -44,3 +44,30 @@ class Answer(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="answers")
+
+# ─────────────────────────────────────────
+# Model — University
+# ─────────────────────────────────────────
+class University(Base):
+    __tablename__ = "universities"
+ 
+    id = Column(Integer, primary_key=True, index=True)
+    nome = Column(String(255), nullable=False)
+    estado = Column(String(2), nullable=False, index=True)
+    cidade = Column(String(100), nullable=False)
+    endereco = Column(String(255))
+ 
+    courses = relationship("UniversityCourse", back_populates="university", cascade="all, delete")
+
+# ─────────────────────────────────────────
+# Model — UniversityCourse
+# ─────────────────────────────────────────
+class UniversityCourse(Base):
+    __tablename__ = "university_courses"
+ 
+    id = Column(Integer, primary_key=True, index=True)
+    university_id = Column(Integer, ForeignKey("universities.id"), nullable=False)
+    curso = Column(String(100), nullable=False)
+ 
+    university = relationship("University", back_populates="courses")
+

@@ -1,18 +1,15 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import universitiesData from '../data/universities.json'
 import '../style/Universities.css'
 
 interface University {
+  id: number
   estado: string
   cidade: string
   instituicao: string
   endereco: string
   cursos: string[]
 }
-
-const universities: University[] = universitiesData
-
 const estados = [
   'AC','AL','AM','AP','BA','CE','DF','ES','GO',
   'MA','MG','MS','MT','PA','PB','PE','PI','PR',
@@ -26,30 +23,31 @@ export default function Universities() {
   const [cidade, setCidade] = useState('')
   const [results, setResults] = useState<University[]>([])
   const [searched, setSearched] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  function normalize(str: string) {
-    return str.toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-  }
-
-  function handleSearch() {
+  async function handleSearch() {
     if (!selectedEstado) return
-    const area = normalize(studyArea)
 
-    const filtered = universities.filter(u => {
-      const matchEstado = u.estado === selectedEstado
-      const matchCidade = cidade.trim()
-        ? normalize(u.cidade).includes(normalize(cidade.trim()))
-        : true
-      const matchCurso = u.cursos.some(c => normalize(c).includes(area) || area.includes(normalize(c)))
-      return matchEstado && matchCidade && matchCurso
-    })
+    setLoading(true)
 
-    setResults(filtered)
-    setSearched(true)
+    try{
+      const params = new URLSearchParams({ 
+        estado: selectedEstado, 
+        cidade: cidade, 
+        curso: studyArea 
+      })
+
+      const response = await fetch(`http://localhost:8000/universities/search?${params}`)
+      const data = await response.json() 
+
+      setResults(data) 
+      setSearched(true)
+    } catch(error){
+      console.error('Erro ao buscar universidades:', error)
+    } finally{
+      setLoading(false)
+    }
   }
-
   function getCursoLabel(curso: string) {
     const map: Record<string, string> = {
       medicina: 'Medicina', direito: 'Direito', computacao: 'Computação',
@@ -104,9 +102,9 @@ export default function Universities() {
           <button
             className={`uni-btn-search ${selectedEstado ? 'active' : 'disabled'}`}
             onClick={handleSearch}
-            disabled={!selectedEstado}
+            disabled={!selectedEstado || loading}
           >
-            🔍 Buscar Faculdades
+            {loading ? 'Buscando...' : '🔍 Buscar Faculdades'}
           </button>
         </div>
 
@@ -120,8 +118,8 @@ export default function Universities() {
             ) : (
               <>
                 <p className="uni-results-count">{results.length} instituição(ões) encontrada(s)</p>
-                {results.map((u, i) => (
-                  <div key={i} className="uni-card">
+                {results.map((u) => (
+                  <div key={u.id} className="uni-card">
                     <h3 className="uni-card-name">{u.instituicao}</h3>
                     <p className="uni-card-address">📍 {u.endereco}</p>
                     <div className="uni-card-cursos">
