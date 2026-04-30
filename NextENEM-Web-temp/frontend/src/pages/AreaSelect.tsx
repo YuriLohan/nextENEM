@@ -26,6 +26,7 @@ export default function AreaSelect() {
     if (!selected) return
     try {
       await api.post('/auth/study-area', { study_area: selected })
+      localStorage.setItem('studyArea', selected)
       navigate('/home')
     } catch {
       navigate('/home')

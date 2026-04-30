@@ -18,7 +18,7 @@ class User(Base):
     is_verified = Column(Boolean, default=False)
     verification_token = Column(String(255), nullable=True, unique=True)
     verification_token = Column(String(255), nullable=True, unique=True)
-    study_area = Column(String(100), nullable=True, default=None) 
+    study_area = Column(String(100), nullable=True) 
 
     answers = relationship("Answer", back_populates="user")
 

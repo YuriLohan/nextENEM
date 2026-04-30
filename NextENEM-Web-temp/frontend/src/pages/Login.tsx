@@ -12,12 +12,25 @@ export default function Login() {
   const [error, setError] = useState('')
 
   async function handleLogin() {
+    setError('')
     try {
       const res = await api.post('/auth/login', { email, password })
       localStorage.setItem('token', res.data.access_token)
       localStorage.setItem('name', res.data.name)
-      const hasArea = res.data.study_area
-      navigate(hasArea ? '/home' : '/area-select')
+
+      if (res.data.study_area) {
+        localStorage.setItem('studyArea', res.data.study_area)
+      } else {
+        localStorage.removeItem('studyArea')
+      }
+ 
+      // Se ainda não tem área definida, manda para seleção
+      if (!res.data.study_area) {
+        navigate('/area-select')
+      } else {
+        navigate('/home')
+      }
+
     } catch (error: any) {
       const msg = error.response?.data?.detail || 'Email ou senha inválidos'
       setError(msg)
