@@ -18,6 +18,8 @@ interface PerformanceData {
 const DISCIPLINE_LABELS: Record<string, string> = {
   matematica: '📐 Matemática',
   linguagens: '📖 Linguagens',
+  'Linguagens': '📖 Linguagens', // Adiciona com maiúscula
+  'espanhol': '📖 Linguagens',
   'ciencias-humanas': '🌍 Ciências Humanas',
   'ciencias-da-natureza': '🔬 Ciências da Natureza',
 }

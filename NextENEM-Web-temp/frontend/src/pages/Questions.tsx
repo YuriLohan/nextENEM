@@ -107,17 +107,40 @@ export default function Questions() {
   }
 }
 
-  function handleAnswer(letter: string) {
+async function handleAnswer(letter: string) {
     if (answered) return
+
     const currentQ = questions[currentIndex]
     setSelected(letter)
     setAnswered(true)
+
     const newAnswers = [...answers]
     newAnswers[currentIndex] = letter
     setAnswers(newAnswers)
 
-    // Opcional: Enviar resposta para o banco de dados aqui se desejar
+    console.log("Enviando dados:", {
+    question_id: currentQ.index,
+    discipline: currentQ.discipline,
+    choice: letter,
+    is_correct: letter === currentQ.correctAlternative
+    }); 
+
+    try {
+  // O seu backend exige question_index, year, discipline, selected, correct e is_correct
+  await api.post('/questions/answer', {
+    question_index: currentQ.index,   // O back pede 'question_index'
+    year: currentQ.year,             // O back pede 'year' (adicionei agora)
+    discipline: currentQ.discipline, // O back pede 'discipline'
+    selected: letter,                // O back pede 'selected' (que é a letra que o usuário clicou)
+    correct: currentQ.correctAlternative, // O back pede 'correct' (a letra certa)
+    is_correct: letter === currentQ.correctAlternative // O back pede 'is_correct' (booleano)
+  });
+    console.log("Resposta salva no banco de dados!");
+  } catch (err) {
+    console.error("Erro ao salvar:", err);
   }
+}
+  
 
   function nextQuestion() {
     if (!answered) return
