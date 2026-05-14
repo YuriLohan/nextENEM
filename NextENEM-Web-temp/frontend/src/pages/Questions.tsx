@@ -5,6 +5,9 @@ import '../style/Questions.css'
 import '../style/Shared.css'
 import ReactMarkdown from 'react-markdown'
 
+// IMPORTAÇÃO DA IMAGEM DO ELEFANTE
+import elefanteIdeia from '../assets/elefante_ideia2-removebg-preview.png'
+
 interface Alternative {
   letter: string
   text: string
@@ -87,29 +90,28 @@ export default function Questions() {
   }, [questions, answers, currentIndex, finished, disciplineFromState])
 
   async function fetchAllQuestions(disc: string) {
-  setLoading(true);
-  const fetched: Question[] = [];
-  
-  try {
-    // Busca 10 questões (ou faça um loop de 10 chamadas)
-    for (let i = 0; i < TOTAL; i++) {
-      const res = await api.get('/questions/random', {
-        params: disc ? { discipline: disc } : {}
-      });
-      fetched.push(res.data);
+    setLoading(true);
+    const fetched: Question[] = [];
+    
+    try {
+      // Busca 10 questões (ou faça um loop de 10 chamadas)
+      for (let i = 0; i < TOTAL; i++) {
+        const res = await api.get('/questions/random', {
+          params: disc ? { discipline: disc } : {}
+        });
+        fetched.push(res.data);
+      }
+      setQuestions(fetched);
+    } catch (err) {
+      console.error("Erro ao carregar simulado:", err);
+      // Se falhar, você pode decidir se limpa o loading ou mostra erro
+    } finally {
+      setLoading(false);
     }
-    setQuestions(fetched);
-  } catch (err) {
-    console.error("Erro ao carregar simulado:", err);
-    // Se falhar, você pode decidir se limpa o loading ou mostra erro
-  } finally {
-    setLoading(false);
   }
-}
 
   function handleAnswer(letter: string) {
     if (answered) return
-    const currentQ = questions[currentIndex]
     setSelected(letter)
     setAnswered(true)
     const newAnswers = [...answers]
@@ -260,7 +262,11 @@ export default function Questions() {
             )}
 
             <div className="bottom-buttons">
-              <button className="btn-hint" onClick={() => alert("Dica: Foque no comando da questão.")}>💡 Dica</button>
+              {/* ALTERAÇÃO EXCLUSIVA AQUI: Estrutura interna modificada */}
+              <button className="btn-hint" onClick={() => alert("Dica: Foque no comando da questão.")}>
+                <img src={elefanteIdeia} alt="Elefante Ideia" className="hint-icon" />
+                <span>Dica do elefante</span>
+              </button>
               <button className={`btn-next ${answered ? 'active' : 'disabled'}`} onClick={nextQuestion} disabled={!answered}>
                 {currentIndex + 1 >= TOTAL ? 'Ver Resultado 🏆' : 'Próxima →'}
               </button>
@@ -275,4 +281,4 @@ export default function Questions() {
       </main>
     </div>
   )
-} 
+}

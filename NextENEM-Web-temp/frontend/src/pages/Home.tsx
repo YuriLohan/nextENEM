@@ -1,6 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
 import '../style/Home.css'
+import NE from '../assets/NE.png'
+
+// Importação dos novos ícones da pasta assets
+import checklistIcon from '../assets/checklist.png'
+import dashboardIcon from '../assets/dashboard.png'
+import educationIcon from '../assets/education.png'
+import graduationHatIcon from '../assets/graduation-hat.png'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -43,7 +50,7 @@ export default function Home() {
     <div className="home-page">
       <header className="home-header">
         <div className="home-header-logo">
-          <div className="home-header-logo-circle">NE</div>
+          <img src={NE} alt="NextENEM Logo" className="home-header-logo-img" />
           <span className="home-header-logo-name">NextENEM</span>
         </div>
 
@@ -83,25 +90,34 @@ export default function Home() {
           )}
         </div>
 
+        {/* Card de Praticar Questões atualizado com o ícone checklist */}
         <div className="home-practice-card" onClick={() => navigate('/questions')}>
-          <p className="home-practice-label">Continuar estudando...</p>
-          <p className="home-practice-title">📝 Praticar Questões</p>
-          <p className="home-practice-sub">Questões do ENEM de todos os anos</p>
+          <div className="home-practice-content">
+            <div className="home-practice-text">
+              <p className="home-practice-label">Continuar estudando...</p>
+              <p className="home-practice-title">Praticar Questões</p>
+              <p className="home-practice-sub">Questões do ENEM de todos os anos</p>
+            </div>
+            <img src={checklistIcon} alt="Icone Checklist" className="home-practice-icon-img" />
+          </div>
         </div>
 
+        {/* Grid de Cards secundários atualizados substituindo os emojis por tags img */}
         <div className="home-grid">
           <div className="home-soon-card home-soon-card--active" onClick={() => navigate('/conteudos')}>
-            <p className="home-soon-emoji">📚</p>
+            <img src={educationIcon} alt="Icone Conteúdos" className="home-soon-icon-img" />
             <p className="home-soon-title">Conteúdos</p>
             <p className="home-soon-label">Estudar por área</p>
           </div>
+          
           <div className="home-soon-card home-soon-card--active" onClick={() => navigate('/performance')}>
-            <p className="home-soon-emoji">📊</p>
+            <img src={dashboardIcon} alt="Icone Desempenho" className="home-soon-icon-img" />
             <p className="home-soon-title">Desempenho</p>
             <p className="home-soon-label">Ver meu progresso →</p>
           </div>
+          
           <div className="home-soon-card home-soon-card--active" onClick={() => navigate('/universidades')}>
-            <p className="home-soon-emoji">🎓</p>
+            <img src={graduationHatIcon} alt="Icone Universidades" className="home-soon-icon-img" />
             <p className="home-soon-title">Universidades</p>
             <p className="home-soon-label">Encontre faculdades na sua cidade</p>
           </div>

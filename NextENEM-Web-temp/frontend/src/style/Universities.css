@@ -20,17 +20,11 @@
     gap: 10px;
   }
 
-  .uni-header-circle {
+  /* Ajuste do logo NE no header */
+  .uni-header-logo-img {
     width: 36px;
     height: 36px;
-    border-radius: 50%;
-    background: #1d4ed8;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 800;
-    color: #fff;
+    object-fit: contain;
   }
 
   .uni-header-name {
@@ -195,14 +189,33 @@
     border: 1px solid #374151;
   }
 
+  /* Container da mensagem vazia com o Elefante */
   .uni-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    padding: 40px 0;
-    color: #6b7280;
+    padding: 30px 10px;
   }
 
-  .uni-empty p {
-    margin: 4px 0;
-    font-size: 14px;
+  /* Dimensionamento da imagem do Elefante detetive */
+  .uni-empty-img {
+    width: 300px;
+    height: auto;
+    margin-bottom: 16px;
+    opacity: 0.9;
+  }
+
+  .uni-empty-title {
+    color: #d1d5db;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+  }
+
+  .uni-empty-sub {
+    color: #6b7280;
+    font-size: 13px;
+    margin: 0;
   }
 }

@@ -2,6 +2,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../style/Universities.css'
 
+// Importação das imagens da pasta assets
+import NE from '../assets/NE.png'
+import ElefanteComLupa from '../assets/Elefante com lupa.png'
+
 interface University {
   id: number
   estado: string
@@ -10,6 +14,7 @@ interface University {
   endereco: string
   cursos: string[]
 }
+
 const estados = [
   'AC','AL','AM','AP','BA','CE','DF','ES','GO',
   'MA','MG','MS','MT','PA','PB','PE','PI','PR',
@@ -30,7 +35,7 @@ export default function Universities() {
 
     setLoading(true)
 
-    try{
+    try {
       const params = new URLSearchParams({ 
         estado: selectedEstado, 
         cidade: cidade, 
@@ -42,12 +47,13 @@ export default function Universities() {
 
       setResults(data) 
       setSearched(true)
-    } catch(error){
+    } catch(error) {
       console.error('Erro ao buscar universidades:', error)
-    } finally{
+    } finally {
       setLoading(false)
     }
   }
+
   function getCursoLabel(curso: string) {
     const map: Record<string, string> = {
       medicina: 'Medicina', direito: 'Direito', computacao: 'Computação',
@@ -63,7 +69,8 @@ export default function Universities() {
     <div className="uni-page">
       <header className="uni-header">
         <div className="uni-header-logo">
-          <div className="uni-header-circle">NE</div>
+          {/* Atualizado para usar o logotipo oficial em PNG */}
+          <img src={NE} alt="NextENEM Logo" className="uni-header-logo-img" />
           <span className="uni-header-name">NextENEM</span>
         </div>
         <button className="uni-btn-back" onClick={() => navigate('/home')}>← Voltar</button>
@@ -111,9 +118,15 @@ export default function Universities() {
         {searched && (
           <div className="uni-results">
             {results.length === 0 ? (
+              /* Estrutura modificada para renderizar o elefante detetive */
               <div className="uni-empty">
-                <p>😕 Nenhuma faculdade encontrada com esse filtro.</p>
-                <p>Tente outro estado ou cidade.</p>
+                <img 
+                  src={ElefanteComLupa} 
+                  alt="Universidade não encontrada" 
+                  className="uni-empty-img" 
+                />
+                <p className="uni-empty-title">Nenhuma faculdade encontrada com esse filtro.</p>
+                <p className="uni-empty-sub">Tente alterar o estado ou digitar outra cidade.</p>
               </div>
             ) : (
               <>

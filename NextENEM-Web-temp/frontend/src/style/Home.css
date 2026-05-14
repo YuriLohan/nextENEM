@@ -1,165 +1,195 @@
 @layer components {
-.home-page {
-  min-height: 100vh;
-  background: #030712;
-  font-family: 'Segoe UI', sans-serif;
-}
+  .home-page {
+    min-height: 100vh;
+    background: #030712;
+    font-family: 'Segoe UI', sans-serif;
+  }
 
-.home-header {
-  background: #111827;
-  padding: 16px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-}
+  .home-header {
+    background: #111827;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
 
-.home-header-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+  .home-header-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-.home-header-logo-circle {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #1d4ed8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 800;
-  color: #fff;
-}
+  .home-header-logo-img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+  }
 
-.home-header-logo-name {
-  color: #60a5fa;
-  font-weight: 800;
-  font-size: 18px;
-}
+  .home-header-logo-name {
+    color: #60a5fa;
+    font-weight: 800;
+    font-size: 18px;
+  }
 
-.home-btn-logout {
-  background: #1f2937;
-  border: none;
-  color: #9ca3af;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-  cursor: pointer;
-  font-weight: 600;
-}
+  .home-btn-logout {
+    background: #1f2937;
+    border: none;
+    color: #9ca3af;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+  }
 
-.home-main {
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 24px 16px 40px;
-}
+  .home-main {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+  }
 
-.home-greeting {
-  font-size: 22px;
-  font-weight: 800;
-  color: #f9fafb;
-  margin: 0 0 20px;
-  letter-spacing: -0.5px;
-}
+  .home-greeting {
+    font-size: 22px;
+    font-weight: 800;
+    color: #f9fafb;
+    margin: 0 0 20px;
+    letter-spacing: -0.5px;
+  }
 
-.home-quote-card {
-  background: #111827;
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
-  border-left: 4px solid #2563eb;
-}
+  .home-quote-card {
+    background: #111827;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    border-left: 4px solid #2563eb;
+  }
 
-.home-quote-label {
-  color: #6b7280;
-  font-size: 12px;
-  font-weight: 600;
-  margin: 0 0 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+  .home-quote-label {
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 
-.home-quote-text {
-  color: #d1d5db;
-  font-size: 14px;
-  line-height: 1.6;
-  margin: 0 0 8px;
-  font-style: italic;
-}
+  .home-quote-text {
+    color: #d1d5db;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 8px;
+    font-style: italic;
+  }
 
-.home-quote-author {
-  color: #4b5563;
-  font-size: 12px;
-  margin: 0;
-  font-weight: 600;
-}
+  .home-quote-author {
+    color: #4b5563;
+    font-size: 12px;
+    margin: 0;
+    font-weight: 600;
+  }
 
-.home-practice-card {
-  background: #1d4ed8;
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 16px;
-  cursor: pointer;
-  box-shadow: 0 6px 20px rgba(29,78,216,0.4);
-}
+  /* Container flex para alinhar o texto e o ícone do checklist */
+  .home-practice-card {
+    background: #1d4ed8;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(29,78,216,0.4);
+    transition: transform 0.2s;
+  }
 
-.home-practice-label {
-  color: rgba(255,255,255,0.7);
-  font-size: 12px;
-  font-weight: 600;
-  margin: 0 0 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+  .home-practice-card:hover {
+    transform: translateY(-2px);
+  }
 
-.home-practice-title {
-  color: #fff;
-  font-size: 18px;
-  font-weight: 800;
-  margin: 0 0 4px;
-}
+  .home-practice-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
 
-.home-practice-sub {
-  color: rgba(255,255,255,0.6);
-  font-size: 13px;
-  margin: 0;
-}
+  .home-practice-text {
+    flex: 1;
+  }
 
-.home-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
+  .home-practice-label {
+    color: rgba(255,255,255,0.7);
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 
-.home-soon-card {
-  background: #111827;
-  border-radius: 16px;
-  padding: 18px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  opacity: 0.7;
-}
+  .home-practice-title {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0 0 4px;
+  }
 
-.home-soon-emoji {
-  font-size: 22px;
-  margin: 0 0 6px;
-}
+  .home-practice-sub {
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    margin: 0;
+  }
 
-.home-soon-title {
-  color: #f9fafb;
-  font-weight: 700;
-  font-size: 14px;
-  margin: 0 0 4px;
-}
+  /* Dimensionamento do ícone de checklist */
+  .home-practice-icon-img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+  }
 
-.home-soon-label {
-  color: #4b5563;
-  font-size: 12px;
-  margin: 0;
-}
-.home-avatar-wrapper {
+  .home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .home-soon-card {
+    background: #111827;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: transform 0.2s, border-color 0.2s;
+    border: 1px solid transparent;
+  }
+
+  .home-soon-card:hover {
+    transform: translateY(-2px);
+    border-color: #1f2937;
+  }
+
+  /* Dimensionamento padronizado para os novos ícones do grid */
+  .home-soon-icon-img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    margin-bottom: 10px;
+  }
+
+  .home-soon-title {
+    color: #f9fafb;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0 0 4px;
+  }
+
+  .home-soon-label {
+    color: #4b5563;
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .home-avatar-wrapper {
     position: relative;
   }
 
