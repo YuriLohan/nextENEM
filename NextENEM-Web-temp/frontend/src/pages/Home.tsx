@@ -1,6 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
 import '../style/Home.css'
+
+import NE from '../assets/NE.png'
+
+import checklistIcon from '../assets/checklist.png'
+import dashboardIcon from '../assets/dashboard.png'
+import educationIcon from '../assets/education.png'
+import graduationHatIcon from '../assets/graduation-hat.png'
 import { getCursoLabel } from './Universities'
 
 export default function Home() {
