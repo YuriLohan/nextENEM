@@ -36,7 +36,7 @@ async def get_random_question(discipline: str = None):
                     url = f"{ENEM_API_BASE}/exams/{year}/questions?limit={config['limit']}&offset={config['offset']}"
                 else:
                     # Modo geral (Simulado Aleatório) puxa o escopo completo da prova
-                    url = f"{ENEM_API_BASE}/exams/{year}/questions?limit=180"
+                    url = f"{ENEM_API_BASE}/exams/{year}/questions?limit=180" # TODO ajeitar o simulado aleatório que ele não está funcionando
                 
                 res = await client.get(url)
                 
