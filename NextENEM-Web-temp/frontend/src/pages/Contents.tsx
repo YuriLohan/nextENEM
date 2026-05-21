@@ -12,7 +12,7 @@ export default function Contents() {
   const navigate = useNavigate()
 
   const handleSelect = (disciplineValue: string) => {
-    // Mandamos para a rota de questões passando a disciplina no estado da navegação
+    // Passamos como 'discipline' para o seu Questions.tsx continuar coletando o texto corretamente
     navigate('/questions', { state: { discipline: disciplineValue } })
   }
 
