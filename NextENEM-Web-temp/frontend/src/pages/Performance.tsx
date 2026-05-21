@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
+import checklistIcon from '../assets/checklist.png' // Ícone para as matérias e estado vazio
+import growthIcon from '../assets/growth.png'       // Ícone para o título principal
 
 interface DisciplineStats {
   total: number
@@ -16,10 +18,10 @@ interface PerformanceData {
 }
 
 const DISCIPLINE_LABELS: Record<string, string> = {
-  matematica: '📐 Matemática',
-  linguagens: '📖 Linguagens',
-  'ciencias-humanas': '🌍 Ciências Humanas',
-  'ciencias-da-natureza': '🔬 Ciências da Natureza',
+  matematica: 'Matemática',
+  linguagens: 'Linguagens',
+  'ciencias-humanas': 'Ciências Humanas',
+  'ciencias-da-natureza': 'Ciências da Natureza',
 }
 
 function ScoreBar({ score }: { score: number }) {
@@ -53,7 +55,11 @@ export default function Performance() {
       </header>
 
       <main style={{ maxWidth: 600, margin: '0 auto', padding: '32px 24px' }}>
-        <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>Meu Desempenho 📊</h2>
+        {/* TÍTULO: Agora usando corretamente o growthIcon ao lado de "Meu Desempenho" */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>Meu Desempenho</h2>
+          <img src={growthIcon} alt="Progresso" style={{ width: 30, height: 30, objectFit: 'contain' }} />
+        </div>
         <p style={{ color: '#9ca3af', marginBottom: 24 }}>Acompanhe seu progresso por área</p>
 
         {loading && <p style={{ color: '#9ca3af' }}>Carregando...</p>}
@@ -62,9 +68,14 @@ export default function Performance() {
           <p style={{ color: '#ef4444' }}>Erro ao carregar desempenho.</p>
         )}
 
+        {/* ESTADO VAZIO: Mantido o checklistIcon aqui no meio */}
         {!loading && data && data.total === 0 && (
           <div style={{ background: '#111827', borderRadius: 16, padding: 32, textAlign: 'center' }}>
-            <p style={{ fontSize: 40, marginBottom: 12 }}>📝</p>
+            <img 
+              src={checklistIcon} 
+              alt="Checklist" 
+              style={{ width: 56, height: 56, marginBottom: 12, objectFit: 'contain' }} 
+            />
             <p style={{ color: '#9ca3af' }}>Você ainda não respondeu nenhuma questão.</p>
             <button
               onClick={() => navigate('/questions')}
@@ -101,13 +112,17 @@ export default function Performance() {
               {Object.entries(data.by_discipline).map(([key, stats]) => (
                 <div key={key} style={{ background: '#111827', borderRadius: 14, padding: 20 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <p style={{ fontWeight: 600 }}>{DISCIPLINE_LABELS[key] || key}</p>
-                    <p style={{ fontWeight: 700, color: stats.score >= 70 ? '#10b981' : stats.score >= 40 ? '#f59e0b' : '#ef4444' }}>
+                    {/* DISCIPLINAS: Mantendo o checklistIcon antes de cada matéria */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <img src={checklistIcon} alt="Checklist" style={{ width: 18, height: 18, objectFit: 'contain' }} />
+                      <p style={{ fontWeight: 600, margin: 0 }}>{DISCIPLINE_LABELS[key] || key}</p>
+                    </div>
+                    <p style={{ fontWeight: 700, margin: 0, color: stats.score >= 70 ? '#10b981' : stats.score >= 40 ? '#f59e0b' : '#ef4444' }}>
                       {stats.score}%
                     </p>
                   </div>
                   <ScoreBar score={stats.score} />
-                  <p style={{ color: '#9ca3af', fontSize: 12, marginTop: 6 }}>
+                  <p style={{ color: '#9ca3af', fontSize: 12, marginTop: 6, margin: '6px 0 0 0' }}>
                     {stats.correct} acertos de {stats.total} questões
                   </p>
                 </div>
