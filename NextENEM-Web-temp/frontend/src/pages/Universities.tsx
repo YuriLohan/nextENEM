@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../style/Universities.css'
+import api from '../services/api'
+
 
 // Importação das imagens da pasta assets
 import NE from '../assets/NE.png'
@@ -20,10 +22,22 @@ const estados = [
   'MA','MG','MS','MT','PA','PB','PE','PI','PR',
   'RJ','RN','RO','RR','RS','SC','SE','SP','TO'
 ]
-
+export function getCursoLabel(curso: string) {
+    const map: Record<string, string> = {
+      medicina: 'Medicina', direito: 'Direito', computacao: 'Computação',
+      engenharia: 'Engenharia', administracao: 'Administração', psicologia: 'Psicologia',
+      pedagogia: 'Pedagogia', enfermagem: 'Enfermagem', arquitetura: 'Arquitetura',
+      contabilidade: 'Contabilidade', letras: 'Letras', historia: 'História',
+      geografia: 'Geografia', artes: 'Artes'
+    }
+    return map[curso] || curso
+  }
+  
 export default function Universities() {
   const navigate = useNavigate()
   const studyArea = localStorage.getItem('studyArea') || ''
+
+
   const [selectedEstado, setSelectedEstado] = useState('')
   const [cidade, setCidade] = useState('')
   const [results, setResults] = useState<University[]>([])
@@ -36,33 +50,20 @@ export default function Universities() {
     setLoading(true)
 
     try {
-      const params = new URLSearchParams({ 
-        estado: selectedEstado, 
-        cidade: cidade, 
-        curso: studyArea 
+      const res = await api.get('/universities/search', {
+        params: {
+          estado: selectedEstado,
+          cidade: cidade.trim(),
+          curso: studyArea,
+        }
       })
-
-      const response = await fetch(`http://localhost:8000/universities/search?${params}`)
-      const data = await response.json() 
-
-      setResults(data) 
-      setSearched(true)
-    } catch(error) {
-      console.error('Erro ao buscar universidades:', error)
+      setResults(res.data)
+    } catch {
+      setResults([])
     } finally {
+      setSearched(true)
       setLoading(false)
     }
-  }
-
-  function getCursoLabel(curso: string) {
-    const map: Record<string, string> = {
-      medicina: 'Medicina', direito: 'Direito', computacao: 'Computação',
-      engenharia: 'Engenharia', administracao: 'Administração', psicologia: 'Psicologia',
-      pedagogia: 'Pedagogia', enfermagem: 'Enfermagem', arquitetura: 'Arquitetura',
-      contabilidade: 'Contabilidade', letras: 'Letras', historia: 'História',
-      geografia: 'Geografia', artes: 'Artes'
-    }
-    return map[curso] || curso
   }
 
   return (
@@ -81,7 +82,7 @@ export default function Universities() {
           <h1 className="uni-title">🎓 Universidades</h1>
           <p className="uni-subtitle">
             Buscando faculdades com curso de{' '}
-            <strong>{studyArea || 'sua área'}</strong>
+            <strong className="uni-area-highlight">{ getCursoLabel(studyArea) || 'sua área'}</strong>
           </p>
         </div>
 
