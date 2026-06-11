@@ -36,7 +36,8 @@ async def get_random_question(discipline: str = None):
                     url = f"{ENEM_API_BASE}/exams/{year}/questions?limit={config['limit']}&offset={config['offset']}"
                 else:
                     # Modo geral (Simulado Aleatório) puxa o escopo completo da prova
-                    url = f"{ENEM_API_BASE}/exams/{year}/questions?limit=180" # TODO ajeitar o simulado aleatório que ele não está funcionando
+                    offset = random.randint(0, 135)
+                    url = f"{ENEM_API_BASE}/exams/{year}/questions?limit=45&offset={offset}" # TODO ajeitar o simulado aleatório que ele não está funcionando
                 
                 res = await client.get(url)
                 
@@ -70,6 +71,23 @@ class AnswerPayload(BaseModel):
     correct: str
     is_correct: bool
 
+# Função auxiliar para padronizar o nome que vai para o Banco de Dados
+def normalize_discipline_slug(discipline_name: str) -> str:
+    if not discipline_name:
+        return "outros"
+    
+    name_lower = discipline_name.lower()
+    
+    if "matematica" in name_lower:
+        return "matematica"
+    elif "linguagens" in name_lower:
+        return "linguagens"
+    elif "humanas" in name_lower:
+        return "ciencias-humanas"
+    elif "natureza" in name_lower:
+        return "ciencias-da-natureza"
+    
+    return "outros"
 
 # ─────────────────────────────────────────
 # Rota — POST /answer
@@ -81,11 +99,14 @@ def save_answer(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
+    discipline_name = payload.discipline if payload.discipline else "outros"
+    standard_discipline = normalize_discipline_slug(discipline_name)
+
     answer = Answer(
         user_id=current_user.id,
         question_index=payload.question_index,
         year=payload.year,
-        discipline=payload.discipline,
+        discipline=standard_discipline,
         selected=payload.selected,
         correct=payload.correct,
         is_correct=payload.is_correct,

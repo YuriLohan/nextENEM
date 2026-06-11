@@ -17,6 +17,8 @@ export default function Login() {
       const res = await api.post('/auth/login', { email, password })
       localStorage.setItem('token', res.data.access_token)
       localStorage.setItem('name', res.data.name)
+      // ✅ Salva o e-mail para usarmos como prefixo único no simulado local
+      localStorage.setItem('email', email)
 
       if (res.data.study_area) {
         localStorage.setItem('studyArea', res.data.study_area)
@@ -24,7 +26,6 @@ export default function Login() {
         localStorage.removeItem('studyArea')
       }
  
-      // Se ainda não tem área definida, manda para seleção
       if (!res.data.study_area) {
         navigate('/area-select')
       } else {

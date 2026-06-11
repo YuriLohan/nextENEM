@@ -20,8 +20,13 @@ export default function Home() {
   const menuRef = useRef<HTMLDivElement>(null)
 
   function handleLogout() {
+    // Remove apenas as credenciais da sessão atual
     localStorage.removeItem('token')
     localStorage.removeItem('name')
+    localStorage.removeItem('studyArea')
+    localStorage.removeItem('email') // Limpa o e-mail para desvincular a chave do simulado
+
+    // Manda de volta para a tela de login zerado
     navigate('/')
   }
 
@@ -101,7 +106,7 @@ export default function Home() {
           <div className="home-practice-content">
             <div className="home-practice-text">
               <p className="home-practice-label">Continuar estudando...</p>
-              <p className="home-practice-title">Praticar Questões</p>
+              <p className="home-practice-title">Simulado Geral ENEM</p>
               <p className="home-practice-sub">Questões do ENEM de todos os anos</p>
             </div>
             <img src={checklistIcon} alt="Icone Checklist" className="home-practice-icon-img" />
@@ -112,7 +117,7 @@ export default function Home() {
         <div className="home-grid">
           <div className="home-soon-card home-soon-card--active" onClick={() => navigate('/conteudos')}>
             <img src={educationIcon} alt="Icone Conteúdos" className="home-soon-icon-img" />
-            <p className="home-soon-title">Conteúdos</p>
+            <p className="home-soon-title">Simulados Específicos</p>
             <p className="home-soon-label">Estudar por área</p>
           </div>
           

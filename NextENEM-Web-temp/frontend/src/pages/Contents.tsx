@@ -19,7 +19,7 @@ export default function Contents() {
   return (
     <div className="questions-page">
       <header className="questions-header">
-        <h1>Conteúdos</h1>
+        <span onClick={() => navigate('/home')} className="uni-header-name">NextENEM · Simulados Específicos</span>
         <button className="btn-back" onClick={() => navigate('/home')}>← Voltar</button>
       </header>
       <main className="questions-main">

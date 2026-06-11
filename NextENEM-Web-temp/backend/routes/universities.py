@@ -1,18 +1,17 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import func
 from database import get_db
-from models import University, UniversityCourse
+from models import University
 
 router = APIRouter()
 
+def _normalize(text: str) -> str:
+    import unicodedata
+    if not text:
+        return ""
+    # Remove acentos, espaços extras nas pontas e joga tudo para minúsculo
+    return unicodedata.normalize("NFD", text.strip().lower()).encode("ascii", "ignore").decode()
 
-# ─────────────────────────────────────────
-# Rota — GET /universities/search
-# Filtra por estado, cidade e curso.
-# O campo "curso" é normalizado para
-# facilitar comparação sem acento.
-# ─────────────────────────────────────────
 @router.get("/search")
 def search_universities(
     estado: str = Query(..., min_length=2, max_length=2),
@@ -20,25 +19,28 @@ def search_universities(
     curso: str = Query(default=""),
     db: Session = Depends(get_db)
 ):
-    query = (
+    # 1. Buscamos todas as universidades do Estado de uma vez (GARANTE que Juazeiro do Norte vem junto)
+    universities = (
         db.query(University)
         .options(joinedload(University.courses))
         .filter(University.estado == estado.upper())
+        .all()
     )
 
+    # 2. Filtragem de CIDADE feita direto no Python (Super segura contra espaços e acentos)
     if cidade.strip():
-        query = query.filter(
-            func.lower(University.cidade).contains(cidade.strip().lower())
-        )
-
-    universities = query.all()
-
-    # Filtra por curso no Python para suportar comparação sem acento
-    if curso.strip():
-        curso_norm = _normalize(curso.strip())
+        cidade_norm = _normalize(cidade)
         universities = [
             u for u in universities
-            if any(_normalize(c.curso) == curso_norm or curso_norm in _normalize(c.curso)
+            if cidade_norm in _normalize(u.cidade)
+        ]
+
+    # 3. Filtragem de CURSO feita no Python
+    if curso.strip():
+        curso_norm = _normalize(curso)
+        universities = [
+            u for u in universities
+            if any(curso_norm in _normalize(c.curso) or _normalize(c.curso) in curso_norm
                    for c in u.courses)
         ]
 
@@ -53,8 +55,3 @@ def search_universities(
         }
         for u in universities
     ]
-
-
-def _normalize(text: str) -> str:
-    import unicodedata
-    return unicodedata.normalize("NFD", text.lower()).encode("ascii", "ignore").decode()

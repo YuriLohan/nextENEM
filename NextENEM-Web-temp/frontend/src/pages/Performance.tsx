@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import checklistIcon from '../assets/checklist.png' // Ícone para as matérias e estado vazio
 import growthIcon from '../assets/growth.png'       // Ícone para o título principal
+import NE from '../assets/NE.png'
 
 interface DisciplineStats {
   total: number
@@ -22,6 +23,7 @@ const DISCIPLINE_LABELS: Record<string, string> = {
   linguagens: 'Linguagens',
   'ciencias-humanas': 'Ciências Humanas',
   'ciencias-da-natureza': 'Ciências da Natureza',
+  outros: 'Outras Áreas' // Adicionado por segurança
 }
 
 function ScoreBar({ score }: { score: number }) {
@@ -39,19 +41,49 @@ export default function Performance() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api.get('/questions/performance')
-      .then(res => setData(res.data))
-      .catch(() => setData(null))
+    const token = localStorage.getItem('token')
+
+    // Se não houver token no localStorage, nem gasta banda chamando a API
+    if (!token) {
+      console.warn("Nenhum token encontrado no localStorage. Usuário deslogado?")
+      setData(null)
+      setLoading(false)
+      return
+    }
+
+    console.log("Disparando requisição de desempenho com o token:", token.substring(0, 10) + "...")
+
+    api.get('/questions/performance', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(res => {
+        console.log("Dados de desempenho recebidos com sucesso:", res.data)
+        setData(res.data)
+      })
+      .catch((err) => {
+        // Mostra o erro exato que veio do servidor FastAPI no console do F12
+        console.error("Erro detalhado na requisição de desempenho:", {
+          status: err.response?.status,
+          detail: err.response?.data?.detail,
+          message: err.message,
+          errorResponse: err.response
+        })
+        setData(null)
+      })
       .finally(() => setLoading(false))
   }, [])
 
   return (
     <div style={{ minHeight: '100vh', background: '#030712', color: '#fff', fontFamily: 'sans-serif' }}>
-      <header style={{ background: '#111827', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 style={{ color: '#60a5fa', fontSize: 20, fontWeight: 700 }}>NextENEM</h1>
-        <button onClick={() => navigate('/home')} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: 14 }}>
-          ← Voltar
-        </button>
+      <header className="uni-header">
+        <div className="uni-header-logo" onClick={() => navigate('/home')}>
+          {/* Atualizado para usar o logotipo oficial em PNG */}
+          <img src={NE} alt="NextENEM Logo" className="uni-header-logo-img" />
+          <span className="uni-header-name">NextENEM</span>
+        </div>
+        <button className="uni-btn-back" onClick={() => navigate('/home')}>← Voltar</button>
       </header>
 
       <main style={{ maxWidth: 600, margin: '0 auto', padding: '32px 24px' }}>

@@ -28,7 +28,9 @@ export default function AreaSelect() {
       await api.post('/auth/study-area', { study_area: selected })
       localStorage.setItem('studyArea', selected)
       navigate('/home')
-    } catch {
+    } catch (err){
+      console.error("Erro ao salvar área no banco, aplicando localmente...", err)
+      localStorage.setItem('studyArea', selected)
       navigate('/home')
     }
   }

@@ -69,9 +69,9 @@ export default function Universities() {
   return (
     <div className="uni-page">
       <header className="uni-header">
-        <div className="uni-header-logo">
+        <div className="uni-header-logo" onClick={() => navigate('/home')}>
           {/* Atualizado para usar o logotipo oficial em PNG */}
-          <img src={NE} alt="NextENEM Logo" className="uni-header-logo-img" />
+          <img src={NE} alt="NextENEM Logo" className="uni-header-logo-img" / >
           <span className="uni-header-name">NextENEM</span>
         </div>
         <button className="uni-btn-back" onClick={() => navigate('/home')}>← Voltar</button>

@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom' // Importado useLocation
+import { useNavigate, useLocation } from 'react-router-dom'
 import api from '../services/api'
 import '../style/Questions.css'
 import '../style/Shared.css'
 import ReactMarkdown from 'react-markdown'
 
-// IMPORTAÇÃO DA IMAGEM DO ELEFANTE
 import elefanteIdeia from '../assets/elefante_ideia2-removebg-preview.png'
 
 interface Alternative {
@@ -29,17 +28,32 @@ interface SavedSession {
   answers: (string | null)[]
   currentIndex: number
   finished: boolean
-  discipline: string // Adicionado disciplina na interface
+  discipline: string
 }
 
 const TOTAL = 10
 
+function formatDisciplineName(slug: string): string {
+  if (!slug) return 'Geral'
+  const map: Record<string, string> = {
+    'matematica': 'Matemática',
+    'linguagens': 'Linguagens',
+    'ciencias-humanas': 'Ciências Humanas',
+    'ciencias-da-natureza': 'Ciências da Natureza',
+    'ciencias-natureza' : 'Ciências da Natureza'
+  }
+  return map[slug] || slug.charAt(0).toUpperCase() + slug.slice(1)
+}
+
 export default function Questions() {
   const navigate = useNavigate()
-  const location = useLocation() // Para pegar a disciplina do Contents.tsx
+  const location = useLocation()
 
-  // Pega a disciplina vinda do navigate('/questions', { state: { discipline: '...' } })
   const disciplineFromState = location.state?.discipline || ''
+  
+  // ✅ Identifica dinamicamente quem está logado para isolar o histórico local
+  const userEmail = localStorage.getItem('email') || 'anonymous'
+  const sessionKey = `questionsSession_${userEmail}`
 
   const [questions, setQuestions] = useState<Question[]>([])
   const [answers, setAnswers] = useState<(string | null)[]>(Array(TOTAL).fill(null))
@@ -49,14 +63,13 @@ export default function Questions() {
   const [loading, setLoading] = useState(true)
   const [finished, setFinished] = useState(false)
 
+  // Recuperar sessão exclusiva da conta logada
   useEffect(() => {
-    const saved = localStorage.getItem('questionsSession')
+    const saved = localStorage.getItem(sessionKey)
     
     if (saved) {
       const session: SavedSession = JSON.parse(saved)
       
-      // LOGICA CRITICAL: Só restaura se a disciplina for a MESMA.
-      // Se eu estava no aleatório e cliquei em "Matemática", ele ignora o cache e carrega novo.
       if (session.discipline === disciplineFromState) {
         setQuestions(session.questions)
         setAnswers(session.answers)
@@ -68,14 +81,14 @@ export default function Questions() {
           setAnswered(true)
         }
         setLoading(false)
-        return // Para aqui, não executa o fetchAllQuestions
+        return
       }
     }
     
-    // Se não tem cache ou a disciplina é diferente, busca novas
     fetchAllQuestions(disciplineFromState)
-  }, [disciplineFromState]) // Recarrega se a disciplina mudar
+  }, [disciplineFromState, sessionKey])
 
+  // Salvar progresso na sessão exclusiva da conta logada
   useEffect(() => {
     if (questions.length === TOTAL) {
       const session: SavedSession = { 
@@ -83,18 +96,17 @@ export default function Questions() {
         answers, 
         currentIndex, 
         finished,
-        discipline: disciplineFromState // Salva qual disciplina é essa sessão
+        discipline: disciplineFromState
       }
-      localStorage.setItem('questionsSession', JSON.stringify(session))
+      localStorage.setItem(sessionKey, JSON.stringify(session))
     }
-  }, [questions, answers, currentIndex, finished, disciplineFromState])
+  }, [questions, answers, currentIndex, finished, disciplineFromState, sessionKey])
 
   async function fetchAllQuestions(disc: string) {
     setLoading(true);
     const fetched: Question[] = [];
     
     try {
-      // Busca 10 questões (ou faça um loop de 10 chamadas)
       for (let i = 0; i < TOTAL; i++) {
         const res = await api.get('/questions/random', {
           params: disc ? { discipline: disc } : {}
@@ -104,21 +116,37 @@ export default function Questions() {
       setQuestions(fetched);
     } catch (err) {
       console.error("Erro ao carregar simulado:", err);
-      // Se falhar, você pode decidir se limpa o loading ou mostra erro
     } finally {
       setLoading(false);
     }
   }
 
-  function handleAnswer(letter: string) {
-    if (answered) return
-    setSelected(letter)
-    setAnswered(true)
-    const newAnswers = [...answers]
-    newAnswers[currentIndex] = letter
-    setAnswers(newAnswers)
+  async function handleAnswer(letter: string) {
+    if (answered) return;
+    setSelected(letter);
+    setAnswered(true);
+    
+    const newAnswers = [...answers];
+    newAnswers[currentIndex] = letter;
+    setAnswers(newAnswers);
 
-    // Opcional: Enviar resposta para o banco de dados aqui se desejar
+    try {
+      const isCorrect = letter === question.correctAlternative;
+      
+      const payload = {
+        question_index: question.index,
+        year: question.year,
+        discipline: question.discipline || disciplineFromState,
+        selected: letter,
+        correct: question.correctAlternative,
+        is_correct: isCorrect
+      };
+
+      await api.post('/questions/answer', payload);
+      console.log("Resposta computada com sucesso no banco!");
+    } catch (err) {
+      console.error("Erro ao salvar resposta no banco de dados:", err);
+    }
   }
 
   function nextQuestion() {
@@ -135,7 +163,7 @@ export default function Questions() {
   }
 
   function restartQuiz() {
-    localStorage.removeItem('questionsSession')
+    localStorage.removeItem(sessionKey)
     fetchAllQuestions(disciplineFromState)
   }
 
@@ -199,14 +227,14 @@ export default function Questions() {
   return (
     <div className="questions-page">
       <header className="questions-header">
-        <h1>NextENEM · {disciplineFromState || 'Geral'}</h1>
+        <h1 onClick={() => navigate('/home')}>NextENEM · {formatDisciplineName(disciplineFromState)|| 'Geral'}</h1>
         <button className="btn-back" onClick={() => navigate('/home')}>← Voltar</button>
       </header>
 
       <main className="questions-main">
         {loading ? (
           <div className="loading-wrapper">
-            <p>Buscando questões de {disciplineFromState || 'todas as áreas'}...</p>
+            <p>Buscando questões de {formatDisciplineName(disciplineFromState) || 'todas as áreas'}...</p>
             <p>Preparando seu material...</p>
           </div>
         ) : questions.length > 0 ? (
@@ -223,7 +251,7 @@ export default function Questions() {
 
             <div className="question-badge">
               <div>
-                <p className="discipline">{question.discipline}</p>
+                <p className="discipline">{formatDisciplineName(question.discipline)}</p>
                 <p className="year-index">ENEM {question.year} · Questão {question.index}</p>
               </div>
             </div>
@@ -262,7 +290,6 @@ export default function Questions() {
             )}
 
             <div className="bottom-buttons">
-              {/* ALTERAÇÃO EXCLUSIVA AQUI: Estrutura interna modificada */}
               <button className="btn-hint" onClick={() => alert("Dica: Foque no comando da questão.")}>
                 <img src={elefanteIdeia} alt="Elefante Ideia" className="hint-icon" />
                 <span>Dica do elefante</span>

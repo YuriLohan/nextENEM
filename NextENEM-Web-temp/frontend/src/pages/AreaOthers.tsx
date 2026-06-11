@@ -16,6 +16,7 @@ export default function AreaOthers() {
     }
     try {
       await api.post('/auth/study-area', { study_area: trimmed })
+      localStorage.setItem('studyArea', trimmed)
       navigate('/home')
     } catch {
       navigate('/home')
