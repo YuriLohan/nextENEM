@@ -1,5 +1,0 @@
-flask
-mysql-connector-python
-flask-cors
-python-dotenv
-bcrypt
