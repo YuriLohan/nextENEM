@@ -1,0 +1,171 @@
+/* Página e Estrutura */
+@layer components {
+.page {
+  min-height: 100vh;
+  background: #030712;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.card {
+  background: #111827;
+  border-radius: 24px;
+  padding: 40px 32px 32px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+}
+
+/* Logo - Ajuste centralizado e aproximação total */
+.logo-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.logo-img {
+  width: 180px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+.logo-title {
+  color: #f9fafb;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.logo-subtitle {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+}
+
+/* Inputs com ícone */
+.input-wrapper {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.register-input-last {
+  margin-bottom: 24px;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #4b5563;
+  display: flex;
+}
+
+.input-field {
+  width: 100%;
+  padding: 14px 14px 14px 44px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #fff;
+  outline: none;
+  box-sizing: border-box;
+  background: #1f2937;
+  transition: all 0.2s;
+}
+
+.input-field:focus {
+  box-shadow: 0 0 0 2px #2563eb;
+  background: #262f3d;
+}
+
+/* Alertas */
+.alert {
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.alert-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+.alert-success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #4ade80;
+}
+
+/* Botões */
+.btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 14px;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.btn-green {
+  background: #16a34a;
+  color: #fff;
+}
+
+/* Google Button (específico para Login) */
+.login-google-btn {
+  width: 100%;
+  padding: 12px;
+  background: #1f2937;
+  color: #fff;
+  border: 1px solid #374151;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+/* Footer de página */
+.page-footer {
+  text-align: center;
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 10px;
+}
+
+.page-footer a {
+  color: #60a5fa;
+  font-weight: 600;
+  text-decoration: none;
+}
+}

@@ -1,0 +1,106 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import api from '../services/api'
+import '../style/shared.css'
+import '../style/Register.css'
+import logo from '../assets/logo.png'
+
+export default function Register() {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [registered, setRegistered] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  async function handleRegister() {
+  setError('')
+  setSuccess('')
+  if (!name.trim() || !email.trim() || !password.trim()) {
+    setError('Todos os campos são obrigatórios')
+    return
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    setError('Email inválido')
+    return
+  }
+  try {
+     setLoading(true)
+
+    await api.post('/auth/register', { name, email, password })
+
+    setSuccess('Cadastro realizado! Redirecionando...')
+    setRegistered(true)
+    setTimeout(() => window.open('http://localhost:5173/inbox', '_self'), 1500)
+  } catch (err: any) {
+    const msg = err.response?.data?.detail || 'Erro ao cadastrar. Tente outro email.'
+    setError(msg)
+  } finally {
+    setLoading(false)
+  }
+}
+
+  return (
+    <div className="page">
+      <div className="card">
+        <div className="logo-wrapper">
+          {/* Classe adicionada e style inline removido */}
+          <img src={logo} alt="NextENEM" className="logo-img" />
+          <p className="logo-subtitle">
+            {registered ? 'Verifique seu email' : 'Crie sua conta gratuitamente'}
+          </p>
+        </div>
+
+        {error && !registered && <div className="alert alert-error">{error}</div>}
+        
+        {registered ? (
+          <>
+            <div className="alert alert-success">{success}</div>
+            <p style={{ textAlign: 'center', color: '#6b7280', fontSize: '13px' }}>
+              Abrindo caixa de entrada...
+            </p>
+          </>
+        ) : (
+          <>
+            <div className="input-wrapper">
+              <span className="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                </svg>
+              </span>
+              <input className="input-field" type="text" placeholder="Nome completo" value={name} onChange={e => setName(e.target.value)} />
+            </div>
+
+            <div className="input-wrapper">
+              <span className="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 7l10 7 10-7"/>
+                </svg>
+              </span>
+              <input className="input-field" type="email" placeholder="email@dominio.com" value={email} onChange={e => setEmail(e.target.value)} />
+            </div>
+
+            <div className="input-wrapper register-input-last">
+              <span className="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </span>
+              <input className="input-field" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} />
+            </div>
+
+            <button className="btn btn-primary" onClick={handleRegister} disabled={loading}>{loading ? 'Cadastrando...' : 'Cadastrar'}</button>
+          </>
+        )}
+
+        {!registered && (
+          <p className="page-footer">
+            Já tem conta? <Link to="/">Entrar</Link>
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}

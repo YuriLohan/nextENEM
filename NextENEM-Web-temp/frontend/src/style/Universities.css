@@ -1,0 +1,221 @@
+@layer components {
+  .uni-page {
+    min-height: 100vh;
+    background: #030712;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .uni-header {
+    background: #111827;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+
+  .uni-header-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Ajuste do logo NE no header */
+  .uni-header-logo-img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+  }
+
+  .uni-header-name {
+    color: #60a5fa;
+    font-weight: 800;
+    font-size: 18px;
+  }
+
+  .uni-btn-back {
+    background: #1f2937;
+    border: none;
+    color: #9ca3af;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .uni-main {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  .uni-title-wrapper {
+    margin-bottom: 24px;
+  }
+
+  .uni-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #f9fafb;
+    margin: 0 0 8px;
+  }
+
+  .uni-subtitle {
+    color: #6b7280;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .uni-subtitle strong {
+    color: #60a5fa;
+    text-transform: capitalize;
+  }
+
+  .uni-search-card {
+    background: #111827;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+
+  .uni-search-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .uni-select {
+    flex: 1;
+    padding: 12px 14px;
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    color: #f1f5f9;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .uni-input {
+    flex: 2;
+    padding: 12px 14px;
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    color: #f1f5f9;
+    font-size: 14px;
+    outline: none;
+  }
+
+  .uni-input:focus,
+  .uni-select:focus {
+    border-color: #2563eb;
+  }
+
+  .uni-btn-search {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+
+  .uni-btn-search.active {
+    background: #2563eb;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(37,99,235,0.4);
+  }
+
+  .uni-btn-search.active:hover {
+    background: #1d4ed8;
+  }
+
+  .uni-btn-search.disabled {
+    background: #1f2937;
+    color: #4b5563;
+    cursor: not-allowed;
+  }
+
+  .uni-results-count {
+    color: #6b7280;
+    font-size: 13px;
+    margin: 0 0 16px;
+  }
+
+  .uni-card {
+    background: #111827;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 12px;
+    border: 1px solid #1f2937;
+    transition: border-color 0.2s;
+  }
+
+  .uni-card:hover {
+    border-color: #2563eb;
+  }
+
+  .uni-card-name {
+    color: #f9fafb;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+
+  .uni-card-address {
+    color: #6b7280;
+    font-size: 13px;
+    margin: 0 0 12px;
+  }
+
+  .uni-card-cursos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .uni-curso-tag {
+    background: #1f2937;
+    color: #60a5fa;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 99px;
+    border: 1px solid #374151;
+  }
+
+  /* Container da mensagem vazia com o Elefante */
+  .uni-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 30px 10px;
+  }
+
+  /* Dimensionamento da imagem do Elefante detetive */
+  .uni-empty-img {
+    width: 300px;
+    height: auto;
+    margin-bottom: 16px;
+    opacity: 0.9;
+  }
+
+  .uni-empty-title {
+    color: #d1d5db;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+  }
+
+  .uni-empty-sub {
+    color: #6b7280;
+    font-size: 13px;
+    margin: 0;
+  }
+}

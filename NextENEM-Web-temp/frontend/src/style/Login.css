@@ -1,0 +1,29 @@
+@layer components {
+  .login-password {
+    margin-bottom: 24px;
+  }
+
+  .login-google-btn {
+    width: 100%;
+    padding: 14px;
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    color: #d1d5db;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .login-footer-forgot {
+    text-align: center;
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0 0 8px;
+  }
+}
