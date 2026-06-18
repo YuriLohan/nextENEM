@@ -6,8 +6,12 @@ export default function Verified() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    setTimeout(() => navigate('/'), 4000)
-  }, [])
+    const timer = setTimeout(() => {
+      navigate('/')
+    }, 4000)
+
+    return () => clearTimeout(timer)
+  }, [navigate])
 
   return (
     <div className="verified-page">
@@ -16,9 +20,6 @@ export default function Verified() {
         <h1>Email verificado!</h1>
         <p>Sua conta foi ativada com sucesso.</p>
         <p className="sub">Redirecionando para o login...</p>
-        <button className="btn btn-primary" style={{ marginTop: '24px' }} onClick={() => navigate('/')}>
-          Ir para o Login
-        </button>
       </div>
     </div>
   )

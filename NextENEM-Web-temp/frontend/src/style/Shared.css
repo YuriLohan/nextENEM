@@ -37,6 +37,13 @@
   object-fit: contain;
   margin-bottom: 8px;
 }
+.logo-title {
+  color: #f9fafb;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0;
+}
 
 .logo-subtitle {
   color: #6b7280;

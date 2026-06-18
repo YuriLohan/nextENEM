@@ -12,28 +12,35 @@ export default function Register() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [registered, setRegistered] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   async function handleRegister() {
-    setError('')
-    setSuccess('')
-    if (!name.trim() || !email.trim() || !password.trim()) {
-      setError('Todos os campos são obrigatórios')
-      return
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      setError('Email inválido')
-      return
-    }
-    try {
-      await api.post('/auth/register', { name, email, password })
-      setSuccess('Cadastro realizado! Verifique seu email para ativar a conta.')
-      setRegistered(true)
-    }catch (err: any) { // Adicione o ": any" aqui para silenciar o erro de tipagem
-      const msg = err.response?.data?.detail || 'Erro ao cadastrar. Tente outro email.'
-      setError(msg)
-    }
+  setError('')
+  setSuccess('')
+  if (!name.trim() || !email.trim() || !password.trim()) {
+    setError('Todos os campos são obrigatórios')
+    return
   }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    setError('Email inválido')
+    return
+  }
+  try {
+     setLoading(true)
+
+    await api.post('/auth/register', { name, email, password })
+
+    setSuccess('Cadastro realizado! Redirecionando...')
+    setRegistered(true)
+    setTimeout(() => window.open('http://localhost:5173/inbox', '_self'), 1500)
+  } catch (err: any) {
+    const msg = err.response?.data?.detail || 'Erro ao cadastrar. Tente outro email.'
+    setError(msg)
+  } finally {
+    setLoading(false)
+  }
+}
 
   return (
     <div className="page">
@@ -51,9 +58,9 @@ export default function Register() {
         {registered ? (
           <>
             <div className="alert alert-success">{success}</div>
-            <button className="btn btn-green" onClick={() => window.open('http://localhost:5173/inbox', '_blank')}>
-              📥 Ir para Caixa de Entrada
-            </button>
+            <p style={{ textAlign: 'center', color: '#6b7280', fontSize: '13px' }}>
+              Abrindo caixa de entrada...
+            </p>
           </>
         ) : (
           <>
@@ -84,13 +91,15 @@ export default function Register() {
               <input className="input-field" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} />
             </div>
 
-            <button className="btn btn-primary" onClick={handleRegister}>Cadastrar</button>
+            <button className="btn btn-primary" onClick={handleRegister} disabled={loading}>{loading ? 'Cadastrando...' : 'Cadastrar'}</button>
           </>
         )}
 
-        <p className="page-footer">
-          Já tem conta? <Link to="/">Entrar</Link>
-        </p>
+        {!registered && (
+          <p className="page-footer">
+            Já tem conta? <Link to="/">Entrar</Link>
+          </p>
+        )}
       </div>
     </div>
   )

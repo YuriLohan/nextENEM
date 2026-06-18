@@ -29,7 +29,11 @@ export default function Inbox() {
         <div className="logo-wrapper">
           <div className="inbox-emoji">📬</div>
           <h1 className="logo-title">Caixa de Entrada</h1>
-          <p className="logo-subtitle">Digite seu email para ver a mensagem</p>
+          {!emailFound && (
+            <p className="logo-subtitle">
+              Digite seu email para ver a mensagem
+            </p>
+          )}
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}
@@ -62,7 +66,7 @@ export default function Inbox() {
           </div>
         )}
 
-        <p className="inbox-back" onClick={() => navigate('/register')}>← Voltar ao cadastro</p>
+        {/*<p className="inbox-back" onClick={() => navigate('/register')}>← Voltar ao cadastro</p>*/}
       </div>
     </div>
   )
